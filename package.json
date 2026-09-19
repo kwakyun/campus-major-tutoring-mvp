@@ -1,0 +1,28 @@
+{
+  "name": "campus-major-tutoring-mvp",
+  "private": true,
+  "version": "0.1.0",
+  "description": "전공한시간 — 모노레포 루트. apps/web(Next.js), apps/api(NestJS), packages/*, db/migrations, tests. S03-T01(A7) 초기 골격.",
+  "engines": {
+    "node": ">=20 <23",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@10.28.0",
+  "scripts": {
+    "build": "pnpm -r --if-present run build",
+    "dev:web": "pnpm --filter @campus-major-tutoring-mvp/web dev",
+    "dev:api": "pnpm --filter @campus-major-tutoring-mvp/api start:dev",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "lint": "pnpm -r --if-present run lint",
+    "test": "pnpm -r --if-present run test",
+    "test:unit": "vitest run",
+    "db:migrate": "node scripts/run-migrations.mjs",
+    "db:seed": "node scripts/run-seed.mjs",
+    "contracts:generate": "node scripts/generate-contracts-client.mjs"
+  },
+  "devDependencies": {
+    "pg": "8.13.1",
+    "typescript": "5.6.3",
+    "vitest": "2.1.4"
+  }
+}

@@ -1,0 +1,73 @@
+schema_version: "1.0"
+kind: parallel_role_dispatch
+status: PLANNED
+role: A6
+name: QA·품질 검증
+common_file: agent-prompts/00-workflow.yaml
+parallel_plan: agent-prompts/parallel/00-orchestration.yaml
+responsibility: 독립된 권한·동시성·금액·전체 흐름 검증과 재현 보고를 담당한다.
+write_paths:
+  - tests/**
+  - docs/qa/**
+excluded_paths: []
+write_scope_rule: 현재 원본 명령 allowed_paths와 교집합만 수정한다. 원본의 현재 handoff는 complete_original에서만, 준비 보고서는 prepare에서만 쓴다. 역할 목록은 소유권 확대 권한이 아니다.
+command_refs:
+  - id: S01-T03
+    stage: S01
+    source_file: agent-prompts/01-requirements.yaml
+    title: 요구사항의 완료 조건 정의
+    condition: always
+  - id: S02-T06
+    stage: S02
+    source_file: agent-prompts/02-detailed-design.yaml
+    title: 설계 일관성 검토
+    condition: always
+  - id: S03-T05
+    stage: S03
+    source_file: agent-prompts/03-project-foundation.yaml
+    title: 기반 통합 검증
+    condition: always
+  - id: S04-T04
+    stage: S04
+    source_file: agent-prompts/04-users-courses-discovery.yaml
+    title: 탐색·권한·추천 통합 검증
+    condition: always
+  - id: S05-T05
+    stage: S05
+    source_file: agent-prompts/05-negotiation-booking.yaml
+    title: 수락·시간·권한 동시성 검증
+    condition: always
+  - id: S06-T07
+    stage: S06
+    source_file: agent-prompts/06-mock-transactions-operations.yaml
+    title: 전체 모의 MVP 검증
+    condition: always
+  - id: S07-T06
+    stage: S07
+    source_file: agent-prompts/07-payments-release-readiness.yaml
+    title: 거래·권한·복구 독립 검증
+    condition: always
+  - id: S08-T05
+    stage: S08
+    source_file: agent-prompts/08-pilot-feedback.yaml
+    title: 사용자 결함 재현과 개선 목록
+    condition: always
+  - id: S09-T06
+    stage: S09
+    source_file: agent-prompts/09-ai-semantic-search.yaml
+    title: AI 품질·권한·대체 경로 검증
+    condition: always
+  - id: S10-T08
+    stage: S10
+    source_file: agent-prompts/10-selected-expansion.yaml
+    title: 선택 확장과 기존 기능 회귀 검증
+    condition: always
+prompt: |-
+  너는 A6 QA·품질 검증 담당이다. A0가 배정한 command_id·phase·run_id·계약 버전을 먼저 확인하라.
+  원본 common_file·source-alignment·해당 단계의 원본 명령을 읽고 필요한 입력·권한을 확인하라. command_refs 전체를 자동 실행하지 마라.
+  phase=prepare이면 계획의 해당 focus만 수행하라. 원본 선행 명령을 완료했다고 가정하지 말고 동결된 계약으로 독립 부분을 준비하라. 없는 생산자는 자신의 소유 범위에 명시적 테스트 대역을 두고 미연결 검증을 보고하라.
+  수정 범위는 원본 allowed_paths와 이 역할 write_paths의 교집합에서 excluded_paths를 제외한다. 준비 중 공통 계약·lockfile·설치·migration·공용 DB 초기화는 하지 마라. 필요한 변경은 A0에게 요청하라.
+  준비 보고서만 docs/parallel-preparation/<run_id>/<command_id>.md에 기록하라. READY_FOR_INTEGRATION은 준비 상태이며 원본 PASS가 아니다. phase=prepare에서 원본 handoff_file을 쓰지 마라.
+  phase=complete_original이면 원본 depends_on의 실제 PASS/허용된 NOT_APPLICABLE를 확인하고 기존 준비 결과를 검토하라. 원본 프롬프트 전체를 수행하며 실제 API·DB 연결·관련 검증을 마친 뒤 원본 handoff_file에 결과를 기록하라.
+  준비 코드와 계약 버전이 다르면 재검증하라. 전역 빌드·공유 DB를 사용하는 테스트는 A0의 단독 실행 배정을 확인하라.
+  역할 밖 버그는 재현·변경 요청으로 전달하고 완료 조건을 낮추지 마라. 현재 작업 결과를 보고한 후 다음 배정을 기다려라.

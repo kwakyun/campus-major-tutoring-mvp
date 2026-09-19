@@ -1,0 +1,239 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_stack" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Rubik:wght@500;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#FBF9F4;}body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 500,'GRAD' 0,'opsz' 24;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "inverse-on-surface": "#f0f0f4", "on-primary-fixed": "#181e00", "surface-container-lowest": "#ffffff", "secondary-container": "#e3e2e6", "on-primary-container": "#5c6c00", "on-tertiary-container": "#5a6c00", "tertiary-container": "#cdf31c", "on-secondary": "#ffffff", "electric-chartreuse": "#D2F824", "inverse-surface": "#2f3034", "soft-lime": "#D8EE6F", "on-secondary-fixed-variant": "#46464a", "outline": "#777966", "on-surface": "#1a1c1f", "on-error-container": "#93000a", "surface-container-high": "#e8e8ec", "on-tertiary": "#ffffff", "surface-bright": "#f9f9fd", "primary-container": "#d8ee6f", "on-surface-variant": "#464838", "on-error": "#ffffff", "surface-dim": "#d9dade", "background": "#f9f9fd", "surface-pure": "#FFFFFF", "error": "#ba1a1a", "surface": "#f9f9fd", "inverse-primary": "#bbd155", "on-primary-fixed-variant": "#404c00", "secondary-fixed-dim": "#c7c6ca", "primary-fixed-dim": "#bbd155", "on-tertiary-fixed": "#181e00", "tertiary": "#546500", "error-container": "#ffdad6", "surface-cream": "#FBF9F4", "tertiary-fixed-dim": "#b2d400", "on-tertiary-fixed-variant": "#3f4c00", "on-secondary-container": "#646468", "surface-ivory": "#F5F3EC", "surface-container-low": "#f3f3f7", "secondary-fixed": "#e3e2e6", "outline-variant": "#c7c8b2", "charcoal-deep": "#121316", "tertiary-fixed": "#ccf21a", "on-primary": "#ffffff", "charcoal-muted": "#1C1E21", "secondary": "#5e5e62", "surface-container-highest": "#e2e2e6", "surface-tint": "#566500", "on-background": "#1a1c1f", "surface-container": "#ededf1", "primary": "#566500", "primary-fixed": "#d7ed6e", "on-secondary-fixed": "#1b1b1f", "surface-variant": "#e2e2e6" }, "borderRadius": { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, "spacing": { "margin-mobile": "1.25rem", "space-sm": "0.5rem", "space-md": "1rem", "space-xs": "0.25rem", "space-xl": "2.5rem", "gutter": "1.25rem", "gutter-mobile": "1rem", "margin": "2rem", "space-lg": "1.5rem" }, "fontFamily": { "display-lg": [ "Plus Jakarta Sans" ], "headline-md": [ "Plus Jakarta Sans" ], "display-lg-mobile": [ "Plus Jakarta Sans" ], "label-md": [ "Plus Jakarta Sans" ], "body-lg": [ "Plus Jakarta Sans" ], "headline-sm": [ "Plus Jakarta Sans" ], "label-lg": [ "Plus Jakarta Sans" ], "label-sm": [ "Plus Jakarta Sans" ], "headline-lg-mobile": [ "Plus Jakarta Sans" ], "body-md": [ "Plus Jakarta Sans" ], "body-sm": [ "Plus Jakarta Sans" ], "headline-lg": [ "Plus Jakarta Sans" ] }, "fontSize": { "display-lg": [ "48px", { "lineHeight": "54px", "letterSpacing": "-0.03em", "fontWeight": "800" } ], "headline-md": [ "24px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "display-lg-mobile": [ "34px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" } ], "label-md": [ "14px", { "lineHeight": "18px", "fontWeight": "600" } ], "body-lg": [ "18px", { "lineHeight": "28px", "fontWeight": "400" } ], "headline-sm": [ "20px", { "lineHeight": "26px", "fontWeight": "600" } ], "label-lg": [ "16px", { "lineHeight": "22px", "fontWeight": "700" } ], "label-sm": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" } ], "headline-lg-mobile": [ "26px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "body-md": [ "15px", { "lineHeight": "24px", "fontWeight": "400" } ], "body-sm": [ "13px", { "lineHeight": "20px", "fontWeight": "400" } ], "headline-lg": [ "32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" } ] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface-cream text-charcoal-deep font-body-md text-body-md flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-cream/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-16 px-margin-mobile flex items-center justify-between gap-space-sm"><button aria-label="뒤로 가기" class="w-11 h-11 -ml-2 rounded-full flex items-center justify-center text-charcoal-deep hover:bg-surface-ivory transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><h1 class="flex-1 text-center font-headline-sm text-headline-sm font-bold text-charcoal-deep truncate px-space-xs">Review</h1><div class="flex items-center gap-space-xs"><button aria-label="공유하기" class="w-11 h-11 rounded-full flex items-center justify-center text-charcoal-deep hover:bg-surface-ivory transition-colors"><span class="material-symbols-outlined text-[22px]">share</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 bg-surface-cream min-h-screen pb-safe"><div class="flex flex-col w-full px-margin-mobile pb-space-xl">
+<!-- Friendly Header Callout -->
+<div class="mt-space-md mb-space-lg">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-lime text-charcoal-deep font-label-sm text-label-sm uppercase tracking-wider mb-space-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-charcoal-deep animate-pulse"></span>
+      수업 완료 확인
+    </span>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-charcoal-deep tracking-tight">
+      오늘 한 수 배웠어요! 🙌
+    </h2>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+      수업 내용을 복습하며 소중한 피드백을 들려주세요.
+    </p>
+</div>
+<!-- Target Class Card -->
+<div class="w-full bg-surface-pure rounded-lg p-space-md shadow-sm mb-space-lg relative overflow-hidden">
+<div class="flex items-center gap-space-md">
+<div class="relative w-14 h-14 rounded-full overflow-hidden shrink-0 bg-surface-ivory shadow-inner">
+<img class="w-full h-full object-cover" alt="박서준 튜터 기본 프로필" src="https://lh3.googleusercontent.com/aida/AEtjO1U_lWlBv6Pzv_b-4MFxvpipMD7Jmj6YRRnVL_enG1k9IzV5ZpOfXFsa55Jlftx3WKO6lmo7W_L0Ea02NWlBT47KaHSLHO89msbKfDToC4ax45Vva0fFD_OYc7dKHfzDXzmJeAJ0yQQFK2NmWYZaZ-6GBmE9O45qyrbcreQztEGd8rhz16xEsrqCZn8__RRce-3NRJGpN5Efn5Rwt9xSfBe56rX1BLHpn3lZc5JFoH4nEA_xFXA8h45PCHd8">
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center gap-1.5 mb-0.5">
+<span class="px-2 py-0.5 rounded-full bg-surface-ivory text-charcoal-deep font-label-sm text-label-sm font-semibold">1:1 코칭</span>
+<span class="font-label-sm text-label-sm text-secondary">오늘 진행</span>
+</div>
+<h3 class="font-label-lg text-label-lg text-charcoal-deep truncate">
+          피그마 실무 UI/UX 입문 1:1
+        </h3>
+<p class="font-body-sm text-body-sm text-secondary truncate">
+          박서준 튜터 · 연세대 시각디자인학과
+        </p>
+</div>
+</div>
+</div>
+<!-- Rating Section -->
+<div class="w-full bg-surface-pure rounded-lg p-space-lg shadow-sm mb-space-lg flex flex-col items-center text-center">
+<h4 class="font-label-lg text-label-lg text-charcoal-deep mb-space-xs">
+      수업 만족도를 평가해주세요
+    </h4>
+<p class="font-body-sm text-body-sm text-secondary mb-space-md" id="rating-desc">
+      별점을 탭하여 만족도를 표시해 주세요
+    </p>
+<!-- 5 Star Interactive Row -->
+<div class="flex items-center justify-center gap-2 mb-space-sm" id="star-rating-group">
+<button aria-label="1점" class="star-btn w-12 h-12 rounded-full flex items-center justify-center text-electric-chartreuse transition-transform active:scale-90" data-star="1" type="button">
+<span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button aria-label="2점" class="star-btn w-12 h-12 rounded-full flex items-center justify-center text-electric-chartreuse transition-transform active:scale-90" data-star="2" type="button">
+<span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button aria-label="3점" class="star-btn w-12 h-12 rounded-full flex items-center justify-center text-electric-chartreuse transition-transform active:scale-90" data-star="3" type="button">
+<span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button aria-label="4점" class="star-btn w-12 h-12 rounded-full flex items-center justify-center text-electric-chartreuse transition-transform active:scale-90" data-star="4" type="button">
+<span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button aria-label="5점" class="star-btn w-12 h-12 rounded-full flex items-center justify-center text-electric-chartreuse transition-transform active:scale-90" data-star="5" type="button">
+<span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-ivory">
+<span class="font-headline-sm text-headline-sm text-charcoal-deep font-extrabold" id="rating-score-display">5.0</span>
+<span class="font-label-sm text-label-sm text-secondary">/ 5.0 만점</span>
+</div>
+</div>
+<!-- Quick Tags Section -->
+<div class="mb-space-lg">
+<div class="flex items-center justify-between mb-space-sm px-1">
+<span class="font-label-md text-label-md text-charcoal-deep">어떤 점이 가장 좋았나요?</span>
+<span class="font-label-sm text-label-sm text-secondary">다중 선택 가능</span>
+</div>
+<!-- Chips Container -->
+<div class="flex flex-wrap gap-2" id="tags-container">
+<button class="tag-chip active flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-soft-lime text-charcoal-deep font-label-md text-label-md transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+<span class="">설명이 쉬웠어요</span>
+</button>
+<button class="tag-chip active flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-soft-lime text-charcoal-deep font-label-md text-label-md transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+<span class="">친절했어요</span>
+</button>
+<button class="tag-chip active flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-soft-lime text-charcoal-deep font-label-md text-label-md transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+<span class="">직접 해볼 수 있었어요</span>
+</button>
+<button class="tag-chip active flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-soft-lime text-charcoal-deep font-label-md text-label-md transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+<span class="">시간이 알찼어요</span>
+</button>
+<button class="tag-chip flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-surface-ivory text-charcoal-deep/70 font-label-md text-label-md transition-all" type="button">
+<span class="material-symbols-outlined text-[18px] hidden">check</span>
+<span class="">준비가 철저했어요</span>
+</button>
+<button class="tag-chip flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-surface-ivory text-charcoal-deep/70 font-label-md text-label-md transition-all" type="button">
+<span class="material-symbols-outlined text-[18px] hidden">check</span>
+<span class="">질문에 바로 답해줬어요</span>
+</button>
+</div>
+</div>
+<!-- Review Input Section -->
+<div class="mb-space-lg">
+<div class="flex items-center justify-between mb-space-xs px-1">
+<label class="font-label-md text-label-md text-charcoal-deep" for="review-text">
+        수업은 어땠나요?
+      </label>
+<span class="font-label-sm text-label-sm text-secondary" id="char-counter">76 / 500자</span>
+</div>
+<div class="relative bg-surface-pure rounded-lg p-space-md shadow-sm">
+<textarea class="w-full bg-transparent resize-none text-charcoal-deep font-body-md text-body-md placeholder:text-charcoal-deep/30 focus:outline-none" id="review-text" maxlength="500" placeholder="수업 방식, 튜터님의 피드백, 실무 적용 팁 등 다른 수강생에게 도움이 될 생생한 경험을 적어주세요." rows="5">비전공자라 오토레이아웃 개념이 정말 어려웠는데, 1시간 동안 옆에서 제 파일을 직접 보면서 에러를 바로잡아주셔서 단번에 이해했습니다. 최고예요!</textarea>
+<div class="flex items-center justify-between pt-space-xs text-secondary">
+<button class="inline-flex items-center gap-1 text-secondary font-label-sm text-label-sm py-1 px-2 rounded-full hover:bg-surface-ivory transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+<span class="">작업 캡처 첨부 (선택)</span>
+</button>
+<span class="font-label-sm text-label-sm text-secondary">최소 10자 이상</span>
+</div>
+</div>
+</div>
+<!-- Trust & Transparency Note -->
+<div class="flex items-start gap-2.5 p-space-md rounded-lg bg-surface-ivory mb-space-xl">
+<span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<div class="flex flex-col">
+<p class="font-label-sm text-label-sm text-charcoal-deep font-semibold mb-0.5">
+        안심 리뷰 인증 시스템
+      </p>
+<p class="font-body-sm text-body-sm text-secondary leading-relaxed">
+        작성하신 후기는 교육자의 활동 기록 및 평점에 투명하게 반영돼요. 건강한 배움 생태계를 만드는 데 큰 힘이 됩니다.
+      </p>
+</div>
+</div>
+<!-- Bottom Action Button Container -->
+<div class="sticky bottom-4 z-20 pt-space-xs">
+<button class="w-full h-14 rounded-full bg-electric-chartreuse text-charcoal-deep font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-transform duration-150" id="submit-review-btn" type="button">
+<span class="">후기 등록 완료</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<script>
+  (function initReviewInteractions() {
+    // Star Rating Interactivity
+    const starBtns = document.querySelectorAll('.star-btn');
+    const scoreDisplay = document.getElementById('rating-score-display');
+    const descDisplay = document.getElementById('rating-desc');
+    let currentRating = 5;
+
+    const descriptions = {
+      1: '아쉬운 점이 많았던 수업이에요',
+      2: '기대에 조금 못 미쳤어요',
+      3: '보통이었어요',
+      4: '유익하고 만족스러웠어요!',
+      5: '더할 나위 없이 완벽한 수업이었어요! 🎉'
+    };
+
+    function updateStars(rating) {
+      currentRating = rating;
+      scoreDisplay.textContent = rating.toFixed(1);
+      descDisplay.textContent = descriptions[rating];
+
+      starBtns.forEach((btn, index) => {
+        const starIcon = btn.querySelector('.material-symbols-outlined');
+        if (index < rating) {
+          btn.classList.add('text-electric-chartreuse');
+          btn.classList.remove('text-surface-dim');
+          starIcon.style.fontVariationSettings = "'FILL' 1";
+        } else {
+          btn.classList.remove('text-electric-chartreuse');
+          btn.classList.add('text-surface-dim');
+          starIcon.style.fontVariationSettings = "'FILL' 0";
+        }
+      });
+    }
+
+    starBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const rating = parseInt(btn.getAttribute('data-star'), 10);
+        updateStars(rating);
+      });
+    });
+
+    // Tag Chip Selection Toggle
+    const tagChips = document.querySelectorAll('.tag-chip');
+    tagChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const checkIcon = chip.querySelector('.material-symbols-outlined');
+        const isActive = chip.classList.contains('active');
+
+        if (isActive) {
+          chip.classList.remove('active', 'bg-soft-lime', 'text-charcoal-deep');
+          chip.classList.add('bg-surface-ivory', 'text-charcoal-deep/70');
+          if (checkIcon) checkIcon.classList.add('hidden');
+        } else {
+          chip.classList.add('active', 'bg-soft-lime', 'text-charcoal-deep');
+          chip.classList.remove('bg-surface-ivory', 'text-charcoal-deep/70');
+          if (checkIcon) checkIcon.classList.remove('hidden');
+        }
+      });
+    });
+
+    // Character Counter
+    const textarea = document.getElementById('review-text');
+    const counter = document.getElementById('char-counter');
+    if (textarea && counter) {
+      textarea.addEventListener('input', () => {
+        const length = textarea.value.length;
+        counter.textContent = `${length} / 500자`;
+      });
+    }
+
+    // Submit Feedback Animation
+    const submitBtn = document.getElementById('submit-review-btn');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', () => {
+        submitBtn.innerHTML = `
+          <span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
+          <span>후기 전달 중...</span>
+        `;
+        submitBtn.disabled = true;
+
+        setTimeout(() => {
+          submitBtn.innerHTML = `
+            <span class="material-symbols-outlined text-[20px]">check_circle</span>
+            <span>등록이 완료되었어요!</span>
+          `;
+          submitBtn.classList.remove('bg-electric-chartreuse');
+          submitBtn.classList.add('bg-charcoal-deep', 'text-surface-pure');
+        }, 800);
+      });
+    }
+  })();
+</script></main>
+
+</body></html>

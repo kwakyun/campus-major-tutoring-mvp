@@ -1,0 +1,71 @@
+# 전공한시간 — 이벤트 계약 baseline (S02-T05)
+# A5(S02-T04) 제안을 A1이 통합. 발행자 구분(서버 사실 vs 클라이언트 보고)을 필드로 고정한다.
+schema_version: "0.1.1-adhoc-curriculum-draft"
+
+conventions:
+  eventId: "각 이벤트는 고유 event_id를 가지며 재전송 시 동일 id로 중복 제거한다"
+  occurredAt: "서버 사실 이벤트는 상태 변경 트랜잭션과 같은 시각을 사용한다"
+  truthLevel: "server_fact | client_reported — client_reported는 결제·완료의 진실로 사용하지 않는다"
+
+events:
+  - name: recommendation_served
+    publisher: A5(recommendations 모듈)
+    truthLevel: server_fact
+    payload: [requestId, filters, rankerVersion, modelVersion, courseIds, reasonCodes]
+  - name: recommendation_impression
+    publisher: A3(클라이언트)
+    truthLevel: client_reported
+    payload: [requestId, courseId, position, visibleAt]
+    note: "중복 제거·비정상 전송 제한 적용"
+  - name: course_detail_view
+    publisher: A3(클라이언트)
+    truthLevel: client_reported
+    payload: [courseId, requestId_optional]
+  - name: inquiry_started
+    publisher: A2(negotiation 모듈, conversation 생성 시)
+    truthLevel: server_fact
+    payload: [conversationId, courseId_optional, learningRequestId_optional, requestId_optional]
+  - name: proposal_agreed
+    publisher: A2(negotiation/booking 모듈, 예약 생성과 같은 트랜잭션)
+    truthLevel: server_fact
+    payload: [bookingId, acceptedProposalId]
+  - name: booking_funded
+    publisher: A4(billing 모듈, 모든 payment_obligations FULFILLED 확인 시)
+    truthLevel: server_fact
+    payload: [bookingId]
+  - name: lesson_completed
+    publisher: A2(booking 모듈, completion_confirmations 처리 시)
+    truthLevel: server_fact
+    payload: [bookingId, sessionId]
+  - name: booking_canceled
+    publisher: A2
+    truthLevel: server_fact
+    payload: [bookingId, reason]
+  - name: refund_completed
+    publisher: A4
+    truthLevel: server_fact
+    payload: [bookingId, paymentId, amount]
+  - name: goal_feedback_submitted
+    publisher: A2(learning_outcomes 저장과 같은 트랜잭션)
+    truthLevel: server_fact_with_self_report
+    payload: [sessionId, learnerId, goalAchieved, feedbackText_optional]
+    note: "이벤트 발행 자체는 서버 사실이나 payload 내용은 학습자 자기보고 — 지표 집계 시 라벨링 필수(metrics-contract-proposal.md §6)"
+  - name: curriculum_draft_generated
+    publisher: A2(catalog 모듈, POST /tutor/courses/curriculum/draft 처리 시)
+    truthLevel: server_fact
+    payload: [tutorId, subjectId_optional, topic, sessionCount, generatorVersion]
+    note: >
+      에드혹 추가(docs/handoffs/ADHOC-01-ai-curriculum-draft.md). "초안이 생성됐다"는
+      서버 사실이며, generatorVersion으로 규칙 기반 임시 생성기와 향후 실제 LLM 연동
+      버전을 구분한다. 이 초안이 실제로 수업 등록까지 이어졌는지는 별도로 courses.
+      curriculum_source=ai_generated 여부로 확인한다(이 이벤트만으로 등록 완료를
+      단정하지 않는다). apps/api 구현에는 아직 이벤트 발행 배관(outbox 등)이 없어
+      실제 발행은 미구현 — 계약만 먼저 고정해 둔다.
+
+acquisition_and_matching:
+  acquisition_channel:
+    values: [organic, community_post, referral_manual, paid_ad, direct]
+    attached_to: [learning_requests, bookings]
+  matching_failure_reason:
+    values: [time_mismatch, price_gap, subject_or_level_mismatch, quality_concern, no_candidate]
+    attached_to: [learning_requests(종료 시), waitlist_entries(expired 시)]

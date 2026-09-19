@@ -1,0 +1,25 @@
+# Handoff: S01-GATE
+
+- task_id: S01-GATE
+- agent: A0(총괄·통합)
+- status: PASS
+- summary: S01-T01(요구사항·정책), S01-T02(모듈·데이터 매핑), S01-T03(인수 기준)의 결과를 통합 검증했다. exit_criteria 3개 항목(P0 요구사항-검증기준 연결, 확정/미정/외부의존 구분, 원문충돌·신규요구사항·시연범위·지표단위 결정상태 명시)을 모두 충족하여 S01을 통합 완료로 판정한다. 실제 인터뷰·시연 실행은 문서화된 BLOCKED 항목으로 남기고 완료로 위장하지 않는다.
+- changed_files:
+  - docs/releases/S01-gate.md
+  - docs/tasks/index.md
+- evidence:
+  - base_revision: docs/handoffs/S01-T01.md, docs/handoffs/S01-T02.md, docs/handoffs/S01-T03.md (모두 status PASS, 2026-09-19)
+  - checks:
+    - "exit_criteria 1: docs/product/requirements.md §3 ↔ docs/qa/acceptance-matrix.md §1 대응 확인"
+    - "exit_criteria 2: docs/decisions/policies.md 상태 컬럼 + docs/architecture/requirements-map.md §3 외부 의존 목록 확인"
+    - "exit_criteria 3: docs/product/source-traceability.md + docs/decisions/policies.md 충돌표 + docs/product/requirements.md §7 확인"
+  - not_run:
+    - "실제 학습자·교육자 인터뷰 및 시연 검증(계획 문서만 존재, 실행은 개발 계약 범위 밖 후속 작업)"
+  - policy_and_metric_versions: "content_revision 2026-09-19.sources-v2, docs/decisions/policies.md 2026-09-19 버전"
+- remaining_work:
+  - "실제 인터뷰 실행 및 주 고객군·과목 확정(A0, 개발 외 실행 작업)"
+  - "S02 상세 설계 착수 시 requirements-map.md §6의 6개 결정 목록 처리"
+- contract_requests: []
+- next_owner: 사용자 지시 대기 — 다음 실행 가능 명령은 S02(agent-prompts/02-detailed-design.yaml) 첫 명령이나 자동 시작하지 않음
+- source_requirement_evidence:
+  - "SRC-01~SRC-12: docs/product/source-traceability.md 전체 표에서 통합 확인, 미해결 항목은 본 문서 및 S01-gate.md §3의 BLOCKED 목록과 일치"

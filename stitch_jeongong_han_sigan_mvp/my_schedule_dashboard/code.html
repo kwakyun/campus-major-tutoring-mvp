@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>전공한시간 - Major Hour</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Phosphor Icons for iOS-like sleek icons -->
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#F7F6F2',
+              card: '#FFFFFF',
+              surface: '#EFF0EB',
+              lime: '#D8EE6F',
+              limeDark: '#BDE345',
+              dark: '#131416',
+              darkSub: '#232528',
+              muted: '#71757E',
+              border: '#E5E4DD'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Pretendard', 'Apple SD Gothic Neo', 'Helvetica Neue', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="custom-scrollbars">
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+  </style>
+<style data-purpose="mobile-frame">
+    body {
+      background-color: #E2E1DA;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px 0;
+    }
+    .ios-device-container {
+      width: 100%;
+      max-width: 414px;
+      height: 896px;
+      background-color: #F7F6F2;
+      border-radius: 48px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.22), 0 0 0 10px #1E2024;
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="font-sans antialiased text-brand-dark selection:bg-brand-lime">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="ios-device-container flex flex-col justify-between" data-purpose="phone-screen-wrapper">
+<!-- Dynamic Island / Speaker cutout simulation -->
+<div class="absolute top-2.5 left-1/2 -translate-x-1/2 w-32 h-7 bg-[#131416] rounded-full z-50 flex items-center justify-between px-3 pointer-events-none">
+<div class="w-3 h-3 rounded-full bg-slate-900 border border-neutral-700"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-neutral-800"></div>
+</div>
+<!-- Scrollable Mobile Content Container -->
+<div class="w-full h-full overflow-y-auto no-scrollbar pb-28 pt-2" data-purpose="screen-scrollable-area">
+<!-- BEGIN: StatusBar -->
+<header class="px-7 pt-3 pb-2 flex justify-between items-center text-sm font-semibold text-neutral-900 tracking-tight" data-purpose="ios-status-bar">
+<span>9:41</span>
+<div class="flex items-center space-x-1.5 text-neutral-900 text-xs">
+<i class="ph-bold ph-cell-signal-full text-sm"></i>
+<i class="ph-bold ph-wifi-high text-sm"></i>
+<i class="ph-bold ph-battery-full text-base"></i>
+</div>
+</header>
+<!-- END: StatusBar -->
+<!-- BEGIN: MainHeader -->
+<section class="px-6 pt-4 pb-3 flex justify-between items-center" data-purpose="page-title-section">
+<div>
+<span class="text-xs uppercase tracking-wider font-semibold text-brand-muted">전공 캘린더 &amp; 과외 현황</span>
+<h1 class="text-3xl font-extrabold tracking-tight text-brand-dark mt-0.5">3월 2025</h1>
+</div>
+<button aria-label="새 과외 수업 개설" class="w-11 h-11 rounded-full bg-brand-dark text-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-transform" data-purpose="add-appointment-button" type="button">
+<i class="ph-bold ph-plus text-lg"></i>
+</button>
+</section>
+<!-- END: MainHeader -->
+<!-- BEGIN: WeeklyDateSelector -->
+<section class="px-6 py-2" data-purpose="weekly-calendar-strip">
+<div class="flex justify-between items-center gap-2">
+<!-- Day 1: 14 Fri -->
+<button class="flex-1 py-3 px-1 rounded-2xl bg-white/70 border border-brand-border/60 flex flex-col items-center justify-center transition-colors hover:bg-white">
+<span class="text-lg font-bold text-neutral-800">14</span>
+<span class="text-xs font-medium text-brand-muted mt-0.5">금</span>
+</button>
+<!-- Day 2: 15 Sat -->
+<button class="flex-1 py-3 px-1 rounded-2xl bg-white/70 border border-brand-border/60 flex flex-col items-center justify-center transition-colors hover:bg-white">
+<span class="text-lg font-bold text-neutral-800">15</span>
+<span class="text-xs font-medium text-brand-muted mt-0.5">토</span>
+</button>
+<!-- Day 3: 16 Sun (Selected Active Pill) -->
+<button class="flex-1 py-3.5 px-1 rounded-2xl bg-white shadow-md border-2 border-brand-lime flex flex-col items-center justify-center relative scale-105 transition-all">
+<span class="absolute -top-1.5 w-2 h-2 rounded-full bg-brand-dark"></span>
+<span class="text-xl font-extrabold text-brand-dark">16</span>
+<span class="text-xs font-bold text-brand-dark mt-0.5">일</span>
+</button>
+<!-- Day 4: 17 Mon -->
+<button class="flex-1 py-3 px-1 rounded-2xl bg-white/70 border border-brand-border/60 flex flex-col items-center justify-center transition-colors hover:bg-white">
+<span class="text-lg font-bold text-neutral-800">17</span>
+<span class="text-xs font-medium text-brand-muted mt-0.5">월</span>
+</button>
+<!-- Day 5: 18 Tue -->
+<button class="flex-1 py-3 px-1 rounded-2xl bg-white/70 border border-brand-border/60 flex flex-col items-center justify-center transition-colors hover:bg-white">
+<span class="text-lg font-bold text-neutral-800">18</span>
+<span class="text-xs font-medium text-brand-muted mt-0.5">화</span>
+</button>
+</div>
+</section>
+<!-- END: WeeklyDateSelector -->
+<!-- BEGIN: UpcomingSessions -->
+<section class="mt-5" data-purpose="upcoming-tutoring-carousel">
+<div class="px-6 flex items-center gap-2 mb-3">
+<h2 class="text-lg font-bold text-brand-dark tracking-tight">다가오는 전공 과외</h2>
+<span class="w-5 h-5 rounded-full bg-brand-dark text-brand-lime text-xs font-bold flex items-center justify-center">2</span>
+</div>
+<!-- Horizontal Scroll Cards Container -->
+<div class="flex gap-3 px-6 overflow-x-auto no-scrollbar snap-x snap-mandatory">
+<!-- Main Card (Active Today) -->
+<article class="min-w-[275px] max-w-[285px] snap-start bg-white rounded-3xl p-5 shadow-sm border border-brand-border/50 flex flex-col justify-between relative" data-purpose="upcoming-class-card">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="inline-flex items-center text-xs font-bold px-2.5 py-1 rounded-full bg-[#F3F6E2] text-neutral-800">
+<span class="w-1.5 h-1.5 rounded-full bg-[#95B813] mr-1.5 animate-pulse"></span>15:30 - 16:30
+                </span>
+<span class="text-[11px] font-semibold text-neutral-400">1회차 클리닉</span>
+</div>
+<h3 class="text-base font-bold text-brand-dark leading-snug mt-2">
+                파이썬 데이터 분석 &amp; 과제 코드 리뷰 1:1
+              </h3>
+</div>
+<!-- Mentor Profile Row -->
+<div class="mt-5 pt-3 border-t border-neutral-100 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<!-- Avatar placeholder styled nicely with initials -->
+<div class="w-10 h-10 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center font-bold text-sm text-neutral-700">
+                  진우
+                </div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-neutral-900 leading-tight">박진우 튜터</span>
+<span class="text-[11px] text-brand-muted">연세대 컴공 4학년</span>
+</div>
+</div>
+<!-- Quick Chat Action Button -->
+<button aria-label="튜터와 실시간 채팅하기" class="w-9 h-9 rounded-full bg-brand-dark text-white flex items-center justify-center shadow-sm hover:bg-neutral-800 active:scale-95 transition-all">
+<i class="ph-bold ph-chat-circle-dots text-base"></i>
+</button>
+</div>
+</article>
+<!-- Second Peek Card (Tomorrow) -->
+<article class="min-w-[260px] snap-start bg-white/90 rounded-3xl p-5 shadow-sm border border-brand-border/40 flex flex-col justify-between opacity-95" data-purpose="upcoming-peek-card">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-700">
+                  내일 14:00 - 15:00
+                </span>
+<span class="text-[11px] font-medium text-neutral-400">포트폴리오</span>
+</div>
+<h3 class="text-base font-bold text-neutral-800 leading-snug mt-2">
+                피그마 기반 모바일 UI/UX 실무 피드백
+              </h3>
+</div>
+<div class="mt-5 pt-3 border-t border-neutral-100 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-10 h-10 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center font-bold text-sm text-neutral-700">
+                  서연
+                </div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-neutral-900 leading-tight">이서연 멘토</span>
+<span class="text-[11px] text-brand-muted">홍익대 시디 졸업</span>
+</div>
+</div>
+<button aria-label="수업 세부정보" class="w-9 h-9 rounded-full bg-neutral-100 text-neutral-800 flex items-center justify-center">
+<i class="ph-bold ph-arrow-right text-sm"></i>
+</button>
+</div>
+</article>
+</div>
+</section>
+<!-- END: UpcomingSessions -->
+<!-- BEGIN: LearningHoursMetricWidget -->
+<!-- Inspired by the reference screen's health data bar indicator widget -->
+<section class="px-6 mt-6" data-purpose="weekly-learning-hours-widget">
+<div class="bg-white rounded-3xl p-4 shadow-sm border border-brand-border/40">
+<div class="flex justify-between items-baseline mb-3">
+<div class="flex items-center gap-2">
+<span class="p-1.5 rounded-lg bg-brand-lime text-brand-dark flex items-center justify-center">
+<i class="ph-fill ph-graduation-cap text-base"></i>
+</span>
+<span class="text-xs font-bold text-brand-dark">이번 주 전공 과외량</span>
+</div>
+<div class="text-right">
+<span class="text-base font-black text-brand-dark">4.5</span>
+<span class="text-xs font-medium text-brand-muted">/ 6.0 시간</span>
+</div>
+</div>
+<!-- Vertical mini-bar chart reminiscent of reference steps tracker -->
+<div class="grid grid-cols-7 gap-2 items-end pt-1 pb-1">
+<!-- Mon -->
+<div class="flex flex-col items-center gap-1.5">
+<div class="w-full bg-neutral-100 h-12 rounded-full overflow-hidden flex flex-col justify-end p-0.5">
+<div class="w-full bg-brand-dark h-8 rounded-full"></div>
+</div>
+<span class="text-[10px] text-brand-muted font-medium">월</span>
+</div>
+<!-- Tue -->
+<div class="flex flex-col items-center gap-1.5">
+<div class="w-full bg-neutral-100 h-12 rounded-full overflow-hidden flex flex-col justify-end p-0.5">
+<div class="w-full bg-brand-dark h-5 rounded-full"></div>
+</div>
+<span class="text-[10px] text-brand-muted font-medium">화</span>
+</div>
+<!-- Wed -->
+<div class="flex flex-col items-center gap-1.5">
+<div class="w-full bg-neutral-100 h-12 rounded-full overflow-hidden flex flex-col justify-end p-0.5">
+<div class="w-full bg-brand-dark h-11 rounded-full"></div>
+</div>
+<span class="text-[10px] text-brand-muted font-medium">수</span>
+</div>
+<!-- Thu -->
+<div class="flex flex-col items-center gap-1.5">
+<div class="w-full bg-neutral-100 h-12 rounded-full overflow-hidden flex flex-col justify-end p-0.5">
+<div class="w-full bg-brand-dark h-7 rounded-full"></div>
+</div>
+<span class="text-[10px] text-brand-muted font-medium">목</span>
+</div>
+<!-- Fri -->
+<div class="flex flex-col items-center gap-1.5">
+<div class="w-full bg-neutral-100 h-12 rounded-full overflow-hidden flex flex-col justify-end p-0.5">
+<div class="w-full bg-brand-dark h-11 rounded-full"></div>
+</div>
+<span class="text-[10px] text-brand-muted font-medium">금</span>
+</div>
+<!-- Sat -->
+<div class="flex flex-col items-center gap-1.5">
+<div class="w-full bg-neutral-100 h-12 rounded-full overflow-hidden flex flex-col justify-end p-0.5">
+<div class="w-full bg-brand-dark h-4 rounded-full"></div>
+</div>
+<span class="text-[10px] text-brand-muted font-medium">토</span>
+</div>
+<!-- Sun (Today - Highlighted in fresh Lime) -->
+<div class="flex flex-col items-center gap-1.5">
+<div class="w-full bg-neutral-100 h-12 rounded-full overflow-hidden flex flex-col justify-end p-0.5">
+<div class="w-full bg-brand-lime h-9 rounded-full border border-neutral-900/10"></div>
+</div>
+<span class="text-[10px] font-bold text-brand-dark">일</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: LearningHoursMetricWidget -->
+<!-- BEGIN: RecentMatchesSection -->
+<section class="px-6 mt-6" data-purpose="recent-tutors-list">
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-base font-bold text-brand-dark">최근 과외 매칭 및 수강 기록</h2>
+<button class="text-xs font-semibold text-neutral-500 hover:text-brand-dark flex items-center">
+            전체보기 <i class="ph ph-caret-right ml-0.5 text-xs"></i>
+</button>
+</div>
+<!-- Grouped List Container replicating reference aesthetic -->
+<div class="bg-white/80 rounded-3xl p-2 border border-brand-border/60 divide-y divide-neutral-100 shadow-sm" data-purpose="tutor-records-container">
+<!-- Record Item 1 -->
+<div class="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-2xl transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-neutral-200/80 border border-neutral-300/60 flex items-center justify-center font-bold text-xs text-neutral-800">
+                선우
+              </div>
+<div>
+<h4 class="text-xs font-bold text-neutral-900">정선우 튜터</h4>
+<p class="text-[11px] text-brand-muted">서울대 수리과학 · 미적분학</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-xs font-semibold text-neutral-900">3월 12일</span>
+<p class="text-[10px] text-emerald-600 font-medium">과외 완료 (5.0)</p>
+</div>
+</div>
+<!-- Record Item 2 -->
+<div class="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-2xl transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-neutral-200/80 border border-neutral-300/60 flex items-center justify-center font-bold text-xs text-neutral-800">
+                민규
+              </div>
+<div>
+<h4 class="text-xs font-bold text-neutral-900">최민규 튜터</h4>
+<p class="text-[11px] text-brand-muted">서강대 경영 · 재무관리 1:1</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-xs font-semibold text-neutral-900">3월 9일</span>
+<p class="text-[10px] text-neutral-400 font-medium">수업 노트 전달됨</p>
+</div>
+</div>
+<!-- Record Item 3 -->
+<div class="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-2xl transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-neutral-200/80 border border-neutral-300/60 flex items-center justify-center font-bold text-xs text-neutral-800">
+                하은
+              </div>
+<div>
+<h4 class="text-xs font-bold text-neutral-900">윤하은 튜터</h4>
+<p class="text-[11px] text-brand-muted">고려대 통계 · R 프로그래밍</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-xs font-semibold text-neutral-900">3월 4일</span>
+<p class="text-[10px] text-brand-muted font-medium">재매칭 가능</p>
+</div>
+</div>
+</div>
+</section>
+<!-- END: RecentMatchesSection -->
+</div>
+<!-- END: Scrollable Mobile Content Container -->
+<!-- BEGIN: FloatingBottomNavigation -->
+<!-- Modeled with exact pill indicator layout from the reference image -->
+<nav class="absolute bottom-6 left-6 right-6 h-16 bg-brand-dark rounded-full px-3 flex items-center justify-between shadow-2xl z-40 border border-neutral-800" data-purpose="bottom-navigation-bar">
+<!-- Nav Item: Home -->
+<button aria-label="홈 피드" class="flex-1 flex justify-center items-center py-2 text-neutral-400 hover:text-white transition-colors">
+<i class="ph ph-house text-2xl"></i>
+</button>
+<!-- Nav Item: Calendar (Active - Pill Highlighted as in https://lh3.googleusercontent.com/aida-public/AB6AXuANKyVjGb-l2kClol_VaBU82Q1bf0vcpVXpu307nBqeljfu8ZsWWWqc5DofGsj0YepHFHvSEc6rL4lmleRnkopRElwjnBPPWCqH33Y4CR2prwK41nxGlEvfmbKMceITekFt6wUudOSiKbGeIN_5z94eXMhXz1clKyD_8gjtnzk3t4hDJssAPNAZkmwbDUwLzZNxfhuQKPWbCW3a3TWRP5AANdczo4KGAietep53GkIYQ419Wl8xsO9at_cbklfm2SXeq-I) -->
+<button aria-label="전공 캘린더 (현재 선택됨)" class="flex items-center justify-center px-5 py-2.5 rounded-full bg-white text-brand-dark shadow-sm transition-all">
+<i class="ph-fill ph-calendar-blank text-2xl"></i>
+</button>
+<!-- Nav Item: My Lessons / Tickets -->
+<button aria-label="수업 및 과외권" class="flex-1 flex justify-center items-center py-2 text-neutral-400 hover:text-white transition-colors">
+<i class="ph ph-article text-2xl"></i>
+</button>
+<!-- Nav Item: Profile -->
+<button aria-label="마이페이지" class="flex-1 flex justify-center items-center py-2 text-neutral-400 hover:text-white transition-colors">
+<i class="ph ph-user text-2xl"></i>
+</button>
+</nav>
+<!-- END: FloatingBottomNavigation -->
+<!-- Home Indicator Bar (iOS) -->
+<div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-36 h-1 bg-neutral-400/50 rounded-full z-50 pointer-events-none"></div>
+</div>
+<!-- END: MobileDeviceFrame -->
+</body></html>

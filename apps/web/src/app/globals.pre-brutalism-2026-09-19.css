@@ -1,0 +1,1078 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
+:root {
+  /* Typography */
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+  
+  /* Brand Palette (Chartreuse & Charcoal Editorial) */
+  --charcoal-deep: #121316;
+  --charcoal-muted: #1c1e21;
+  --charcoal-light: #2a2d32;
+  
+  --electric-chartreuse: #d2f824;
+  --soft-lime: #d8ee6f;
+  --primary-olive: #566500;
+  
+  /* Surfaces */
+  --bg-cream: #fbf9f4;
+  --bg-ivory: #f5f3ec;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f3f3f7;
+  
+  /* Legacy alias mappings for backward compatibility */
+  --primary: #121316;
+  --primary-hover: #000000;
+  --primary-light: #f5f3ec;
+  --primary-border: #e8e8ec;
+  
+  --accent: #566500;
+  --accent-light: #f5f3ec;
+  --accent-lime: #d2f824;
+  
+  /* Texts */
+  --text-main: #121316;
+  --text-muted: #464838;
+  /* 2026-09-19 가독성 개선: 기존 #777966은 밝은 배경 위에서 WCAG AA 본문 대비(4.5:1)를 만족하지 못했음
+     (cream 배경 4.24:1, white 배경 4.46:1 — 계산 근거 docs/qa/ux-foundation-recheck-2026-09-19.md 참고).
+     동일 색상 계열을 유지하면서 배경 대비 5.4~5.7:1을 확보하도록 살짝 어둡게 조정. */
+  --text-dim: #666856;
+  --text-on-dark: #fbf9f4;
+
+  /* Borders */
+  --border-subtle: #e8e6df;
+  --border-strong: #d5d3cc;
+  /* 폼 입력 필드 전용 테두리. --border-subtle(대비 1.2:1)은 입력창 경계가 거의 보이지 않아
+     "어디에 입력하는지" 파악이 어려웠음 — 비텍스트 UI 대비 권장 기준(3:1)을 만족하도록 강화. */
+  --border-input: #8f8c7e;
+  
+  /* Status Tones */
+  --tone-chartreuse-bg: #d2f824;
+  --tone-chartreuse-text: #121316;
+  --tone-chartreuse-border: #bbd155;
+
+  --tone-lime-bg: #d8ee6f;
+  --tone-lime-text: #121316;
+  --tone-lime-border: #bbd155;
+
+  --tone-positive-bg: #eaf7db;
+  --tone-positive-text: #325200;
+  --tone-positive-border: #c5e69e;
+  
+  --tone-warning-bg: #fef3c7;
+  --tone-warning-text: #92400e;
+  --tone-warning-border: #fde68a;
+  
+  --tone-critical-bg: #fee2e2;
+  --tone-critical-text: #991b1b;
+  --tone-critical-border: #fca5a5;
+  
+  --tone-info-bg: #f5f3ec;
+  --tone-info-text: #121316;
+  --tone-info-border: #e2e2e6;
+  
+  --tone-purple-bg: #f3e8ff;
+  --tone-purple-text: #6b21a8;
+  --tone-purple-border: #d8b4fe;
+
+  --tone-neutral-bg: #f5f3ec;
+  --tone-neutral-text: #464838;
+  --tone-neutral-border: #e2e2e6;
+  
+  /* Shadows (Pebble Soft Elevation) */
+  --shadow-xs: 0 1px 3px rgba(18, 19, 22, 0.04);
+  --shadow-sm: 0 4px 12px rgba(18, 19, 22, 0.04);
+  --shadow-md: 0 8px 24px rgba(18, 19, 22, 0.06);
+  --shadow-lg: 0 16px 40px -12px rgba(18, 19, 22, 0.1);
+  --shadow-glow: 0 0 20px rgba(210, 248, 36, 0.35);
+  
+  /* Radii (Pebble Architecture) */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+  
+  /* Layout */
+  --max-width: 1080px;
+  --header-height: 64px;
+
+  /* 공통 포커스 링(키보드 접근성) — 입력 필드 포커스 스타일과 동일한 톤을 버튼·링크·네비게이션에도 통일 적용 */
+  --focus-ring: 0 0 0 3px rgba(210, 248, 36, 0.55);
+}
+
+/* Base & Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+html, body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-cream);
+  color: var(--text-main);
+  /* 가독성 개선: 1.5 → 1.65. 본문 텍스트 줄간격을 넓혀 문단이 촘촘해 보이지 않도록 함.
+     큰 제목까지 늘어지지 않도록 아래 h1~h6 규칙에서 별도로 좁혀준다. */
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+}
+
+p {
+  line-height: 1.65;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 키보드 포커스 표시 — 폼 필드 외 클릭 가능 요소 전반에 대한 기본값.
+   더 구체적인 .cmt-* 규칙이 있으면 그쪽이 우선 적용된다. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 6px;
+}
+
+/* 모션에 민감한 사용자를 위한 처리 — 애니메이션/전환/부드러운 스크롤을 모두 사실상 끈다 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Layout Container */
+.cmt-container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.cmt-main-content {
+  min-height: calc(100vh - var(--header-height) - 180px);
+  padding-top: 28px;
+  padding-bottom: 100px;
+}
+
+/* Header */
+.cmt-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(251, 249, 244, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(18, 19, 22, 0.05);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.cmt-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.cmt-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--charcoal-deep);
+}
+
+.cmt-brand__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--electric-chartreuse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--charcoal-deep);
+  font-weight: bold;
+}
+
+.cmt-brand__badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--charcoal-deep);
+  color: var(--electric-chartreuse);
+  letter-spacing: 0.05em;
+}
+
+/* Navigation Links */
+.cmt-nav {
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (min-width: 768px) {
+  .cmt-nav {
+    display: flex;
+  }
+}
+
+.cmt-nav__link {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  transition: all 0.18s ease;
+}
+
+.cmt-nav__link:hover {
+  color: var(--charcoal-deep);
+  background: var(--bg-ivory);
+}
+
+.cmt-nav__link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.cmt-nav__link--active {
+  color: var(--charcoal-deep);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+  font-weight: 700;
+}
+
+.cmt-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cmt-session-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-xs);
+}
+
+/* Mobile Floating Bottom Nav (Stitch Signature) */
+.cmt-floating-nav-wrapper {
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .cmt-floating-nav-wrapper {
+    display: none;
+  }
+}
+
+.cmt-floating-nav {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 440px;
+  background: rgba(18, 19, 22, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-full);
+  padding: 6px;
+  box-shadow: 0 16px 40px -8px rgba(18, 19, 22, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cmt-floating-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  border-radius: var(--radius-full);
+  color: rgba(255, 255, 255, 0.65);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  /* 가독성 개선: 0.68rem(약 11px)은 라벨 텍스트로 읽기엔 너무 작았음 → 0.72rem(약 11.5px)로 상향.
+     하단 탭 5개가 한 줄에 들어가야 하는 제약상 본문 크기까지는 못 키우지만 최소한의 가독 폭 확보. */
+  font-size: 0.72rem;
+  font-weight: 600;
+  gap: 2px;
+}
+
+.cmt-floating-nav__item:hover {
+  color: #ffffff;
+}
+
+.cmt-floating-nav__item:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.cmt-floating-nav__item--active {
+  background: var(--electric-chartreuse);
+  color: var(--charcoal-deep) !important;
+  font-weight: 800;
+  box-shadow: 0 0 16px rgba(210, 248, 36, 0.4);
+}
+
+.cmt-floating-nav__item--active .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Button Component */
+.cmt-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-full);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.cmt-button:active {
+  transform: scale(0.97);
+}
+
+.cmt-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring), var(--shadow-sm);
+}
+
+.cmt-button--primary {
+  background: var(--charcoal-deep);
+  color: var(--bg-cream);
+  box-shadow: var(--shadow-sm);
+}
+
+.cmt-button--primary:hover:not(:disabled) {
+  background: var(--electric-chartreuse);
+  color: var(--charcoal-deep);
+  box-shadow: var(--shadow-glow);
+}
+
+.cmt-button--secondary {
+  background: var(--bg-surface);
+  color: var(--charcoal-deep);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-xs);
+}
+
+.cmt-button--secondary:hover:not(:disabled) {
+  background: var(--bg-ivory);
+  border-color: var(--charcoal-deep);
+}
+
+.cmt-button--outline {
+  background: transparent;
+  color: var(--charcoal-deep);
+  border: 1.5px solid var(--charcoal-deep);
+}
+
+.cmt-button--outline:hover:not(:disabled) {
+  background: var(--charcoal-deep);
+  color: var(--bg-cream);
+}
+
+.cmt-button--ghost {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.cmt-button--ghost:hover:not(:disabled) {
+  background: var(--bg-ivory);
+  color: var(--charcoal-deep);
+}
+
+.cmt-button--danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.cmt-button--danger:hover:not(:disabled) {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.cmt-button--sm {
+  font-size: 0.82rem;
+  padding: 6px 14px;
+}
+
+.cmt-button--md {
+  font-size: 0.92rem;
+  padding: 10px 20px;
+}
+
+.cmt-button--lg {
+  font-size: 1.02rem;
+  padding: 13px 26px;
+}
+
+.cmt-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* 로딩 중인 버튼은 "비활성"이 아니라 "처리 중"이므로 너무 흐려 보이지 않게 하고
+   스피너는 항상 또렷하게 보이도록 한다(제출 버튼을 눌렀을 때 실제로 뭔가 진행 중임을
+   알 수 있어야 사용자가 중복 클릭하지 않는다). */
+.cmt-button--loading:disabled {
+  opacity: 0.85;
+  cursor: progress;
+}
+
+.cmt-button__spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: cmt-spin 0.6s linear infinite;
+}
+
+@keyframes cmt-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Card Component (Pebble Rounded) */
+.cmt-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(18, 19, 22, 0.04);
+}
+
+.cmt-card--bordered {
+  border: 1px solid var(--border-subtle);
+}
+
+.cmt-card--interactive {
+  cursor: pointer;
+}
+
+.cmt-card--interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(18, 19, 22, 0.12);
+}
+
+.cmt-card--p-none { padding: 0; }
+.cmt-card--p-sm { padding: 14px; }
+.cmt-card--p-md { padding: 22px; }
+.cmt-card--p-lg { padding: 30px; }
+
+.cmt-card__header {
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.cmt-card__footer {
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Status Badges */
+.cmt-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.cmt-status-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.cmt-status-badge--sm {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+}
+
+.cmt-status-badge--md {
+  font-size: 0.8rem;
+  padding: 4px 12px;
+}
+
+.cmt-status-badge--chartreuse {
+  background: var(--tone-chartreuse-bg);
+  color: var(--tone-chartreuse-text);
+  box-shadow: 0 2px 8px rgba(210, 248, 36, 0.3);
+}
+
+.cmt-status-badge--lime {
+  background: var(--tone-lime-bg);
+  color: var(--tone-lime-text);
+}
+
+.cmt-status-badge--positive {
+  background: var(--tone-positive-bg);
+  color: var(--tone-positive-text);
+}
+
+.cmt-status-badge--warning {
+  background: var(--tone-warning-bg);
+  color: var(--tone-warning-text);
+}
+
+.cmt-status-badge--critical {
+  background: var(--tone-critical-bg);
+  color: var(--tone-critical-text);
+}
+
+.cmt-status-badge--info {
+  background: var(--bg-ivory);
+  color: var(--charcoal-deep);
+}
+
+.cmt-status-badge--purple {
+  background: var(--tone-purple-bg);
+  color: var(--tone-purple-text);
+}
+
+.cmt-status-badge--neutral {
+  background: var(--bg-ivory);
+  color: var(--text-muted);
+}
+
+/* Form Fields */
+.cmt-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cmt-form-field__label {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--charcoal-deep);
+}
+
+/* 필수 입력 표시(*) — 컴포넌트(form-field.tsx)는 이 클래스를 렌더링하지만 지금까지 스타일이
+   없어 라벨과 같은 색으로 묻혀 보였다. 눈에 띄도록 강조색 적용 */
+.cmt-form-field__required {
+  color: var(--tone-critical-text);
+  margin-left: 3px;
+  font-weight: 700;
+}
+
+.cmt-form-field__input,
+.cmt-form-field__select,
+.cmt-form-field__textarea {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  /* 가독성/입력 UX 개선: 기존 --border-subtle은 입력창 배경(흰색)과 거의 구분되지 않았음(대비 1.2:1).
+     --border-input(대비 ≈3.2:1)로 교체해 "여기가 입력 가능한 영역"임을 시각적으로 분명히 함. */
+  border: 1px solid var(--border-input);
+  background: var(--bg-surface);
+  color: var(--charcoal-deep);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.cmt-form-field__input::placeholder,
+.cmt-form-field__textarea::placeholder {
+  color: rgba(18, 19, 22, 0.4);
+}
+
+.cmt-form-field__input:focus,
+.cmt-form-field__select:focus,
+.cmt-form-field__textarea:focus {
+  border-color: var(--charcoal-deep);
+  box-shadow: var(--focus-ring);
+}
+
+.cmt-form-field__input:disabled,
+.cmt-form-field__select:disabled,
+.cmt-form-field__textarea:disabled {
+  background: var(--bg-ivory);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* 입력 오류 상태 — 지금까지는 필드 아래 빨간 문구만 있고 입력창 테두리 자체는 바뀌지 않아
+   여러 필드 중 어떤 것이 잘못됐는지 한눈에 파악하기 어려웠음. 테두리·배경까지 함께 표시. */
+.cmt-form-field--error .cmt-form-field__input,
+.cmt-form-field--error .cmt-form-field__select,
+.cmt-form-field--error .cmt-form-field__textarea {
+  border-color: var(--tone-critical-border);
+  background: #fff8f8;
+}
+
+.cmt-form-field--error .cmt-form-field__input:focus,
+.cmt-form-field--error .cmt-form-field__select:focus,
+.cmt-form-field--error .cmt-form-field__textarea:focus {
+  border-color: var(--tone-critical-text);
+  box-shadow: 0 0 0 3px rgba(153, 27, 27, 0.18);
+}
+
+/* 안내문(hint)·도움말(helper)·오류 문구 — 0.78rem(약12.5px)은 보조 문구치고 작아 가독성이
+   떨어졌고, form-field.tsx가 실제로 쓰는 클래스명(__helper)이 이 파일에 없어 스타일이
+   전혀 적용되지 않던 버그도 함께 수정(기존엔 __hint만 정의되어 있었음). */
+.cmt-form-field__hint,
+.cmt-form-field__helper {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.cmt-form-field__error {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--tone-critical-text);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Stitch Components & Utilities */
+
+/* Category Chips */
+.category-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 600;
+  background: var(--bg-surface);
+  color: var(--charcoal-muted);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.category-chip:hover {
+  background: var(--bg-ivory);
+  color: var(--charcoal-deep);
+}
+
+.category-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.category-chip--active {
+  background: var(--charcoal-deep) !important;
+  color: var(--bg-cream) !important;
+  box-shadow: var(--shadow-sm);
+  font-weight: 700;
+}
+
+/* Search Bar (Pebble Pill) */
+.cmt-search-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: var(--bg-surface);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  padding: 6px 10px 6px 18px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.cmt-search-bar:focus-within {
+  box-shadow: var(--shadow-glow);
+  border-color: var(--electric-chartreuse);
+}
+
+.cmt-search-bar__input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.96rem;
+  color: var(--charcoal-deep);
+  outline: none;
+  padding: 6px 0;
+}
+
+.cmt-search-bar__input::placeholder {
+  color: rgba(18, 19, 22, 0.4);
+}
+
+.cmt-search-bar__input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Hero Badge */
+.cmt-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: var(--electric-chartreuse);
+  color: var(--charcoal-deep);
+  font-size: 0.78rem;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(210, 248, 36, 0.3);
+}
+
+.cmt-hero-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--charcoal-deep);
+}
+
+/* Text Highlighter */
+.cmt-highlight {
+  position: relative;
+  display: inline-block;
+}
+
+.cmt-highlight::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 2px;
+  width: 100%;
+  height: 8px;
+  background: var(--soft-lime);
+  z-index: -1;
+  border-radius: 4px;
+  opacity: 0.85;
+}
+
+/* Bento & Grid Utilities */
+.cmt-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .cmt-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.cmt-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 640px) {
+  .cmt-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cmt-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.cmt-section-header {
+  margin-bottom: 24px;
+}
+
+.cmt-section-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--charcoal-deep);
+}
+
+.cmt-section-subtitle {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Quick Match Banner (Stitch) */
+.cmt-quick-match-banner {
+  background: var(--charcoal-deep);
+  color: var(--bg-cream);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 12px 32px rgba(18, 19, 22, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.cmt-quick-match-banner::after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(210, 248, 36, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Footer */
+.cmt-footer {
+  background: var(--bg-cream);
+  border-top: 1px solid rgba(18, 19, 22, 0.06);
+  padding: 48px 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.cmt-footer__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+@media (min-width: 768px) {
+  .cmt-footer__grid {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+
+.cmt-footer__disclaimer {
+  padding: 16px;
+  background: var(--bg-ivory);
+  border-radius: var(--radius-md);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* Modal Overlay */
+.cmt-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 19, 22, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: cmt-fade-in 0.2s ease;
+}
+
+.cmt-modal-content {
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  max-width: 540px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(18, 19, 22, 0.2);
+  padding: 28px;
+  animation: cmt-scale-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cmt-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cmt-scale-in {
+  from { transform: scale(0.94); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Stitch Safe Area & Layout Utilities */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 24px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 16px);
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Ticket Card Notches & Perforation */
+.cmt-ticket-card {
+  position: relative;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.cmt-ticket-notch-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 16px 0;
+}
+.cmt-ticket-notch-left {
+  position: absolute;
+  left: -24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-cream);
+  z-index: 2;
+}
+.cmt-ticket-notch-right {
+  position: absolute;
+  right: -24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-cream);
+  z-index: 2;
+}
+.cmt-ticket-perforation {
+  width: 100%;
+  border-top: 2px dashed rgba(18, 19, 22, 0.15);
+}
+
+/* Chat & Proposal Styling */
+.cmt-chat-bubble-learner {
+  background: var(--charcoal-deep);
+  color: var(--bg-cream);
+  border-radius: var(--radius-md);
+  border-bottom-right-radius: 4px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow-xs);
+  max-width: 82%;
+  align-self: flex-end;
+}
+.cmt-chat-bubble-tutor {
+  background: var(--bg-surface);
+  color: var(--charcoal-deep);
+  border-radius: var(--radius-md);
+  border-top-left-radius: 4px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow-xs);
+  max-width: 85%;
+  align-self: flex-start;
+}
+.cmt-proposal-card {
+  position: relative;
+  background: var(--charcoal-deep);
+  color: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.cmt-proposal-card::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(210, 248, 36, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* 화면 전환(네비게이션) UX — 지금까지는 페이지를 이동하면 내용이 그냥 뚝 바뀌어서
+   "화면이 넘어갔다"는 느낌 없이 갑작스러웠음. layout.tsx의 PageTransition이 경로가 바뀔 때마다
+   이 클래스가 붙은 요소를 새로 마운트시켜, 아래로 살짝 밀려 올라오며 페이드인되는 전환을 준다. */
+.cmt-page-transition {
+  animation: cmt-page-fade-in 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cmt-page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,242 @@
+# 에이전트에게 전달할 계획된 명령 프롬프트입니다. 쉘 스크립트가 아닙니다.
+schema_version: "1.0"
+kind: agent_prompt_stage
+id: S09
+order: 9
+title: AI 의미 검색·작성 보조
+status: PLANNED
+common_file: agent-prompts/00-workflow.yaml
+goal: 기본 추천을 유지하면서 의미 검색·초안·모델 평가를 추가한다.
+requires_stage_gates:
+  - S06-GATE
+entry_checks:
+  - S06 권한·영구 작업·이벤트·기본 추천이 준비됨
+  - S07·S08이 외부 의존으로 대기여도 S06 완료 시 독립 선택 가능
+dispatch_prompt: A0는 공통 지침과 실제 선행 결과를 확인한 후 commands.order 순서대로 한 명령씩 전달하라. 각 담당자는 자기 명령만 수행한다. 마지막 S09-GATE의 판정으로 현재 단계를 마무리한다.
+commands:
+  - id: S09-T01
+    order: 1
+    agent: A1
+    title: AI 파생 데이터와 내부 계약
+    status: PLANNED
+    depends_on:
+      - S06-GATE
+    condition: always
+    prompt: |-
+      너는 전공한시간의 A1 아키텍처·DB·API 계약 담당이다.
+      agent-prompts/00-workflow.yaml의 공통 지침과 현재 단계의 선행 결과를 읽고 이 명령만 수행하라.
+      공개 검색 사본·임베딩·source revision·모델/전처리 버전·차원·AI 작업 스키마를 추가하라.
+      AI 계정은 공개용 사본과 파생 데이터만 접근하게 하고 업무 원본·인증·원장 권한을 주지 마라.
+      내부 API·초안 공개 상태·삭제 전파 계약과 migration을 작성하라.
+      검색 파생 데이터는 공개 동의된 수업 설명·목표·수준·샘플 설명만 사용하라. 신원 증빙·비공개 결과물·채팅·계좌를 검색 사본과 모델 입력에 섞지 마라.
+    allowed_paths:
+      - db/**
+      - packages/contracts/**
+      - docs/architecture/**
+      - docs/api/**
+      - docs/handoffs/S09-T01.md
+    expected_outputs:
+      - db/migrations/
+      - packages/contracts/ai-openapi.yaml
+      - docs/architecture/ai-data.md
+    acceptance_criteria:
+      - 서로 다른 모델 벡터를 혼합하지 않는 구조임
+      - 삭제·비공개 상태를 최종 업무 조회에서 검사할 수 있음
+      - 검색 사본과 AI 입력의 공개 범위·삭제 전파가 명확함
+    handoff_file: docs/handoffs/S09-T01.md
+    source_requirements:
+      - SRC-02
+      - SRC-04
+      - SRC-10
+  - id: S09-T02
+    order: 2
+    agent: A7
+    title: Python·FastAPI·worker 실행 기반
+    status: PLANNED
+    depends_on:
+      - S09-T01
+    condition: always
+    prompt: |-
+      너는 전공한시간의 A7 개발 기반·배포·운영 담당이다.
+      agent-prompts/00-workflow.yaml의 공통 지침과 현재 단계의 선행 결과를 읽고 이 명령만 수행하라.
+      services/ai의 초기 Python 환경·의존성 잠금·테스트·컨테이너 실행 기반을 준비하라.
+      NestJS 내부 통신 인증·timeout·리소스·DB 연결 한도를 설정하고 외부 모델 키를 분리하라.
+      초기 골격 뒤 AI 앱·worker 소유권을 A5에 넘겨라.
+    allowed_paths:
+      - services/ai/**
+      - infra/**
+      - scripts/**
+      - .github/workflows/**
+      - docs/operations/**
+      - docs/handoffs/S09-T02.md
+    expected_outputs:
+      - services/ai/
+      - docs/operations/ai-runtime.md
+    acceptance_criteria:
+      - AI가 브라우저에서 직접 호출되지 않음
+      - 거래 API의 자원을 AI 작업이 무제한 사용하지 않음
+    handoff_file: docs/handoffs/S09-T02.md
+  - id: S09-T03
+    order: 3
+    agent: A5
+    title: 의미 검색·초안·평가 구현
+    status: PLANNED
+    depends_on:
+      - S09-T02
+    condition: always
+    prompt: |-
+      너는 전공한시간의 A5 AI·추천·데이터 담당이다.
+      agent-prompts/00-workflow.yaml의 공통 지침과 현재 단계의 선행 결과를 읽고 이 명령만 수행하라.
+      한국어 평가 질의를 만들고 기본 추천 결과를 기록한 뒤 모델 Adapter·임베딩 갱신·pgvector 의미 검색을 구현하라.
+      필수 조건을 만족하는 후보 안에서 키워드와 의미 검색을 결합하고 실패 시 기본 추천을 반환하라.
+      수업 수정·비공개·삭제·오래된 작업과 모델 버전 전환을 처리하라.
+      검토 후 확정하는 커리큘럼·프로필 초안과 영구 작업 상태를 구현하라.
+      실제 모델을 호출하지 못하면 대역 검증과 실모델 미검증을 분리하고 품질 개선을 주장하지 마라.
+      프로젝트에 필요한 다른 전공 단원, 편입 기초 개념, 구체적 기한·수준·대면 지역·가능 시간 질의를 평가셋에 포함하라. 시간이나 예산이 맞지 않는 후보를 의미 유사도로 정당화하지 마라.
+      프로필·커리큘럼·예상 결과물 초안은 제공된 사실에 근거하고 교사의 검토·수정 뒤 게시하라. 교육 활동 이력을 만들어내거나 합격·자격·취업 효과를 보장하지 마라. 다음 학습 단계 제안은 선택 가능한 보조 기능으로 취급하라.
+    allowed_paths:
+      - apps/api/src/modules/recommendations/**
+      - services/ai/**
+      - docs/ai/**
+      - docs/handoffs/S09-T03.md
+    expected_outputs:
+      - services/ai/
+      - docs/ai/semantic-evaluation.md
+      - docs/ai/draft-evaluation.md
+    acceptance_criteria:
+      - AI 실패 시 기본 추천이 유지됨
+      - 삭제·오래된 revision이 새 결과를 덮어쓰지 않음
+      - 품질·비용·지연·모델 버전이 기록됨
+      - 두 고객군 질의와 조건 불일치·근거 없는 자격/효과 생성 사례를 평가함
+    handoff_file: docs/handoffs/S09-T03.md
+    source_requirements:
+      - SRC-01
+      - SRC-02
+      - SRC-03
+      - SRC-10
+  - id: S09-T04
+    order: 4
+    agent: A2
+    title: 업무 공개·권한·AI 작업 연결
+    status: PLANNED
+    depends_on:
+      - S09-T03
+    condition: always
+    prompt: |-
+      너는 전공한시간의 A2 핵심 업무 백엔드 담당이다.
+      agent-prompts/00-workflow.yaml의 공통 지침과 현재 단계의 선행 결과를 읽고 이 명령만 수행하라.
+      수업 공개·수정·비공개·삭제 이벤트를 outbox에서 검색 파생 데이터로 연결하라.
+      업무 API에서 AI 작업의 요청자·소유자·사용량·최종 공개 권한을 검사하라.
+      추천 후보의 최신 시간·공개·차단 상태를 조회할 계약을 유지하고 AI 결과가 거래 상태를 바꾸지 못하게 하라.
+    allowed_paths:
+      - apps/api/src/** (billing 및 recommendations 제외)
+      - apps/worker/src/**
+      - docs/backend/**
+      - docs/handoffs/S09-T04.md
+    expected_outputs:
+      - docs/backend/ai-integration.md
+      - apps/api/src/modules/catalog/
+    acceptance_criteria:
+      - 다른 사람의 초안·작업에 접근할 수 없음
+      - AI가 예약·결제·인증 상태를 수정하지 않음
+    handoff_file: docs/handoffs/S09-T04.md
+  - id: S09-T05
+    order: 5
+    agent: A3
+    title: AI 추천·초안 검토 화면
+    status: PLANNED
+    depends_on:
+      - S09-T04
+    condition: always
+    prompt: |-
+      너는 전공한시간의 A3 UX·프론트엔드 담당이다.
+      agent-prompts/00-workflow.yaml의 공통 지침과 현재 단계의 선행 결과를 읽고 이 명령만 수행하라.
+      자연어 목표 검색·확인 가능한 추천 이유·초안 생성 대기·실패·검토·수정·확정을 구현하라.
+      AI가 추출한 시간·지역은 사용자가 확인할 수 있게 하고 초안을 자동 공개하지 마라.
+      기본 추천 전환과 AI 사용 한도에서도 기존 탐색·예약 흐름을 유지하라.
+      자연어에서 추출한 목표·수준·시간·예산을 확인·수정할 수 있게 하고 대체 시간·대기 신청을 유지하라. 생성문과 교사가 확인한 공개 내용을 구분하라.
+    allowed_paths:
+      - apps/web/**
+      - packages/ui/**
+      - docs/ux/**
+      - docs/handoffs/S09-T05.md
+    expected_outputs:
+      - apps/web/
+      - docs/ux/ai-check.md
+    acceptance_criteria:
+      - 초안과 확정된 공개 수업을 구분함
+      - AI 실패가 예약 화면을 막지 않음
+      - AI 오류·미사용 상태에서도 원래 학습 요청·대기·예약 흐름이 가능함
+    handoff_file: docs/handoffs/S09-T05.md
+    source_requirements:
+      - SRC-03
+      - SRC-10
+  - id: S09-T06
+    order: 6
+    agent: A6
+    title: AI 품질·권한·대체 경로 검증
+    status: PLANNED
+    depends_on:
+      - S09-T05
+    condition: always
+    prompt: |-
+      너는 전공한시간의 A6 QA·품질 검증 담당이다.
+      agent-prompts/00-workflow.yaml의 공통 지침과 현재 단계의 선행 결과를 읽고 이 명령만 수행하라.
+      AI timeout·잘못된 후보 ID·비공개 수업·모델 전환·오래된 작업·삭제 전파·권한 없는 작업 조회를 검증하라.
+      동일 평가 질의로 기본 추천과 비교하고 성능·비용·지연 검증 범위를 확인하라.
+      프로필 초안의 근거 없는 경력·자격 생성 및 자동 공개를 검사하라.
+      비공개 학습 결과의 모델 전송, 합격/자격 보장, 샘플에 없는 교육 이력 생성, 사용자 확인 없이 시간·예산 조건 완화를 검증하라. 교육 효과·개인화 개선 주장은 실제 평가 근거와 구분하라.
+    allowed_paths:
+      - tests/**
+      - docs/qa/**
+      - docs/handoffs/S09-T06.md
+    expected_outputs:
+      - docs/qa/S09-ai.md
+    acceptance_criteria:
+      - 필수 조건 위반과 거래 영향이 차단됨
+      - 대역 검증과 실제 모델 평가를 구분함
+      - 추가 고객군과 개인정보·사실성·조건 준수 검증이 포함됨
+    handoff_file: docs/handoffs/S09-T06.md
+    source_requirements:
+      - SRC-02
+      - SRC-03
+      - SRC-10
+  - id: S09-GATE
+    order: 7
+    agent: A0
+    title: 9단계 통합 검증과 완료 판정
+    status: PLANNED
+    depends_on:
+      - S09-T01
+      - S09-T02
+      - S09-T03
+      - S09-T04
+      - S09-T05
+      - S09-T06
+    condition: always
+    prompt: |-
+      너는 A0 총괄·통합 담당이다.
+      이 단계의 모든 명령 보고와 QA 결과를 확인하고 exit_criteria를 기준으로 통합 버전을 판정하라.
+      실패·미검증·외부 의존은 숨기지 말고 소유자에게 보완 작업을 배분하라. 필요한 보완이 완료되면 동일 기준으로 재검증하라.
+      완료되지 않은 필수 명령을 임의로 건너뛰지 마라.
+      통합 완료 여부와 근거·남은 사항·다음 실행 가능 명령을 기록하라. 다음 단계는 자동 실행하지 마라.
+      첨부 문서 반영 사항도 source_requirements 및 agent-prompts/source-alignment.md에 연결해 검증하라.
+    allowed_paths:
+      - docs/tasks/index.md
+      - docs/decisions/**
+      - docs/releases/**
+      - docs/handoffs/S09-GATE.md
+    expected_outputs:
+      - docs/releases/S09-gate.md
+      - docs/tasks/index.md
+    acceptance_criteria:
+      - 기본 방식과 비교한 의미 검색·초안의 품질·비용·지연 근거가 있음
+      - AI 실패·삭제 데이터·모델 전환·권한 경계가 검증됨
+      - 원문 고객군의 목표 검색과 교사 검토 초안이 개인정보·필수 조건·기본 경로를 유지함
+    handoff_file: docs/handoffs/S09-GATE.md
+exit_criteria:
+  - 기본 방식과 비교한 의미 검색·초안의 품질·비용·지연 근거가 있음
+  - AI 실패·삭제 데이터·모델 전환·권한 경계가 검증됨
+  - 원문 고객군의 목표 검색과 교사 검토 초안이 개인정보·필수 조건·기본 경로를 유지함
+content_revision: 2026-09-19.sources-v2
+source_alignment_file: agent-prompts/source-alignment.md

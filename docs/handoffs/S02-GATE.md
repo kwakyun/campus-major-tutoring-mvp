@@ -1,0 +1,26 @@
+# Handoff: S02-GATE
+
+- task_id: S02-GATE
+- agent: A0(총괄·통합)
+- status: PASS
+- summary: S02-T01(DB·API 계약)~T06(설계 일관성 검토)의 결과를 통합 검증했다. exit_criteria 3개 항목(화면·API·DB·권한·상태 일치, 제안→동의→예약→금액 인터페이스 정의, 학습목표·품질·대기·재이용·생활권·지표 추가 계약 통합)을 모두 충족하여 S02를 통합 완료로 판정한다. QA가 발견한 F-01은 즉시 수정 완료했고, F-02·F-04는 설계 단계에서 완결 불가능한 항목으로 OPEN 유지한 채 각각 S04·S06(또는 S02 후속)에 명시적으로 인계했다. 완료로 위장하지 않았다.
+- changed_files:
+  - docs/releases/S02-gate.md
+  - docs/tasks/index.md
+- evidence:
+  - base_revision: docs/handoffs/S02-T01.md~S02-T06.md (모두 status PASS, 2026-09-19)
+  - checks:
+    - "exit_criteria 1: docs/architecture/contract-baseline.md §5 + docs/qa/S02-design-review.md §1 확인"
+    - "exit_criteria 2: openapi.yaml 제안/수락/결제 엔드포인트 + payments/contracts-proposal.md §1~2 확인"
+    - "exit_criteria 3: docs/api/internal-contracts.md §10 SRC 대조표 확인"
+  - not_run:
+    - "DB migration 실행, 실제 동시성 통합 테스트 — 구현 단계(S03 이후) 대상"
+  - policy_and_metric_versions: "openapi.yaml 0.2.0-s02-baseline, events.yaml 0.1.0-s02-baseline"
+- remaining_work:
+  - "F-02 자기거래 DB 제약을 S04에서 구현"
+  - "F-04 completion_rate 분모 규칙을 S02 후속 또는 S06 이전에 표준화"
+  - "S03 착수 시 baseline 기준 DB migration 작성 및 CI 클라이언트 생성 연결"
+- contract_requests: []
+- next_owner: 사용자 지시 대기 — 다음 실행 가능 명령은 S03(agent-prompts/03-project-foundation.yaml) 첫 명령이나 자동 시작하지 않음
+- source_requirement_evidence:
+  - "SRC-01~SRC-08: docs/api/internal-contracts.md §10에서 통합 확인, OPEN 항목은 본 문서 remaining_work와 일치"

@@ -1,0 +1,1042 @@
+openapi: "3.0.3"
+info:
+  title: 전공한시간 업무 API
+  version: "0.2.2-adhoc-curriculum-draft"
+  description: >
+    S04-T01 백엔드 엔드포인트 및 DTO 반영본. S02 베이스라인에 누락되었던
+    sampleDescription, /tutors/{id}, /tutor/courses/{id} PATCH, availability,
+    /admin/learning-requests/{id}/assist, /subjects, /life-zones를 추가했다.
+    0.2.2: 에드혹 추가(사용자 요청, docs/handoffs/ADHOC-01-ai-curriculum-draft.md) —
+    Course.curriculumSource, POST /tutor/courses/curriculum/draft. S04 GATE 이후
+    별도 A0 통합 리뷰 없이 추가된 변경이므로 다음 정식 게이트에서 재검토가 필요하다.
+servers:
+  - url: /api
+security:
+  - cookieAuth: []
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: session
+  responses:
+    ValidationError:
+      description: 입력 검증 실패
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: 권한 없음(참여자·소유자·업무 권한 불일치)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+      description: >
+        사용자+작업+키 단위 요청 해시와 결과를 저장한다. 같은 키에 다른 요청 본문이 오면
+        409 IDEMPOTENCY_KEY_CONFLICT로 거절한다.
+  schemas:
+    Error:
+      type: object
+      required: [code, message, requestId]
+      properties:
+        code:
+          type: string
+          enum:
+            - VALIDATION_ERROR
+            - UNAUTHENTICATED
+            - FORBIDDEN
+            - NOT_FOUND
+            - STALE_PROPOSAL
+            - SCHEDULE_CONFLICT
+            - PAYMENT_AMOUNT_MISMATCH
+            - PAYMENT_RECONCILIATION_REQUIRED
+            - IDEMPOTENCY_KEY_CONFLICT
+            - SELF_DEALING_NOT_ALLOWED
+            - CONDITION_NOT_MET
+        message:
+          type: string
+        requestId:
+          type: string
+    Money:
+      type: integer
+      description: KRW 정수(원)
+    BasisPoints:
+      type: integer
+      description: "1/10000 단위. 1500 = 15%"
+    VerificationBadge:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [school_enrollment, major, career, certification]
+        status:
+          type: string
+          enum: [self_reported, pending, verified, rejected]
+    TutorPublicProfile:
+      type: object
+      properties:
+        id: { type: string }
+        displayName: { type: string, description: "이름 일부 표기" }
+        school: { type: string, nullable: true }
+        major: { type: string, nullable: true }
+        verificationBadges:
+          type: array
+          items: { $ref: '#/components/schemas/VerificationBadge' }
+        teachingEvidence:
+          type: object
+          description: "인증 배지와 분리된 필드 — authorization.md §5"
+          properties:
+            sampleDescription: { type: string }
+            expectedOutcomes: { type: array, items: { type: string } }
+            reviewSummary: { type: object }
+    Course:
+      type: object
+      required: [id, tutorId, subjectId, lifeZoneId, learningGoal, askingPrice, status]
+      properties:
+        id: { type: string }
+        tutorId: { type: string }
+        subjectId: { type: string }
+        lifeZoneId: { type: string }
+        targetAudience: { type: string }
+        prerequisiteLevel: { type: string, nullable: true, description: "값 없음은 '수준 확인 필요'로 표현, 부적격 처리 금지" }
+        learningGoal: { type: string }
+        unitBreakdown:
+          type: array
+          items: { type: object }
+        totalMinutes: { type: integer }
+        expectedOutcome: { type: string }
+        sampleDescription: { type: string, nullable: true, description: "수업 샘플 설명 — DB 및 data-model.md 동기화" }
+        capacity: { type: integer, minimum: 1 }
+        askingPrice: { $ref: '#/components/schemas/Money' }
+        feeBps: { $ref: '#/components/schemas/BasisPoints', description: "등록 시점 참고 수수료(PR-02). 실제 청구는 합의 시점 policyVersionId 기준" }
+        policyVersionId: { type: string, description: "PR-02" }
+        curriculumSource:
+          type: string
+          enum: [manual, ai_generated]
+          default: manual
+          description: >
+            에드혹 추가(docs/handoffs/ADHOC-01-ai-curriculum-draft.md). 이 커리큘럼이
+            POST /tutor/courses/curriculum/draft 초안으로 시작됐는지(ai_generated) 튜터가
+            처음부터 직접 작성했는지(manual) 표시한다. ai_generated여도 튜터가 검토·수정 후
+            제출한 것이며 자동 게시를 의미하지 않는다.
+        reviewSummary:
+          type: object
+          nullable: true
+          description: "CR-09 — 평점·후기수·완료횟수 요약. 표본 적으면 nullable로 두고 전체평균 블렌딩은 클라이언트에 강제하지 않음"
+          properties:
+            averageRating: { type: number, nullable: true }
+            reviewCount: { type: integer }
+            completedCount: { type: integer }
+        status: { type: string, enum: [draft, pending_review, published, unpublished] }
+    LearningRequest:
+      type: object
+      required: [id, learnerId, goal, lifeZoneId, status]
+      properties:
+        id: { type: string }
+        learnerId: { type: string }
+        goal: { type: string }
+        level: { type: string, nullable: true }
+        deadline: { type: string, format: date-time, nullable: true }
+        budgetRange:
+          type: object
+          properties:
+            min: { $ref: '#/components/schemas/Money' }
+            max: { $ref: '#/components/schemas/Money' }
+        desiredWindows:
+          type: array
+          items:
+            type: object
+            properties:
+              start: { type: string, format: date-time }
+              end: { type: string, format: date-time }
+        lifeZoneId: { type: string }
+        acquisitionChannel: { type: string, enum: [organic, community_post, referral_manual, paid_ad, direct], description: "AR-03" }
+        status: { type: string, enum: [open, matched, waitlisted, expired, withdrawn] }
+    ProposalTerms:
+      type: object
+      required: [curriculum, sessions, participants, prices, policies, validity]
+      properties:
+        curriculum:
+          type: object
+          properties:
+            goal: { type: string }
+            prerequisite: { type: string }
+            scope: { type: string }
+            outcome: { type: string }
+        sessions:
+          type: array
+          items:
+            type: object
+            properties:
+              startsAt: { type: string, format: date-time }
+              endsAt: { type: string, format: date-time }
+              venueId: { type: string }
+              totalMinutes: { type: integer }
+        participants:
+          type: object
+          properties:
+            tutorId: { type: string }
+            learnerIds:
+              type: array
+              items: { type: string }
+        prices:
+          type: object
+          properties:
+            tuition: { $ref: '#/components/schemas/Money' }
+            feeBps: { $ref: '#/components/schemas/BasisPoints' }
+            payoutEstimate: { $ref: '#/components/schemas/Money' }
+            learnerDeposit: { $ref: '#/components/schemas/Money' }
+            tutorDeposit: { $ref: '#/components/schemas/Money' }
+        policies:
+          type: object
+          properties:
+            policyVersionId: { type: string }
+        validity:
+          type: string
+          format: date-time
+          description: 제안 만료 시점
+    Proposal:
+      type: object
+      properties:
+        id: { type: string }
+        conversationId: { type: string }
+        version: { type: integer }
+        proposerId: { type: string }
+        status: { type: string, enum: [ACTIVE, SUPERSEDED, EXPIRED, ACCEPTED] }
+        termsHash: { type: string }
+        terms: { $ref: '#/components/schemas/ProposalTerms' }
+        expiresAt: { type: string, format: date-time }
+    Booking:
+      type: object
+      properties:
+        id: { type: string }
+        acceptedProposalId: { type: string }
+        status:
+          type: string
+          enum: [PAYMENT_PENDING, CONFIRMED, EXPIRED, CANCELED, IN_PROGRESS, COMPLETION_PENDING, COMPLETED, DISPUTED]
+        policyVersionId: { type: string }
+        termsSnapshot: { type: object }
+        acquisitionChannel: { type: string, enum: [organic, community_post, referral_manual, paid_ad, direct], nullable: true, description: "AR-03, 최초 학습 요청에서 상속" }
+        version: { type: integer }
+    PaymentObligation:
+      type: object
+      properties:
+        id: { type: string }
+        bookingId: { type: string }
+        payerId: { type: string }
+        purpose: { type: string, enum: [tuition, learner_deposit, tutor_deposit] }
+        amount: { $ref: '#/components/schemas/Money' }
+        expiresAt: { type: string, format: date-time, description: "PR-01 — PAYMENT_PENDING 만료 처리 기준" }
+        status: { type: string, enum: [PENDING, FULFILLED, EXPIRED, REFUND_PENDING, REFUNDED] }
+    Verification:
+      type: object
+      description: CR-03/CR-04
+      properties:
+        id: { type: string }
+        userId: { type: string }
+        type: { type: string, enum: [school_enrollment, major, career, certification] }
+        status: { type: string, enum: [self_reported, pending, verified, rejected] }
+        evidenceKey: { type: string, nullable: true, description: "비공개 storage 참조. 공개 API 응답에 포함 금지" }
+        reviewedBy: { type: string, nullable: true }
+        reviewedAt: { type: string, format: date-time, nullable: true }
+        rejectionReason: { type: string, nullable: true, description: "반려 시 필수" }
+    Dispute:
+      type: object
+      description: PR-03
+      properties:
+        id: { type: string }
+        bookingId: { type: string }
+        status: { type: string, enum: [open, under_review, resolved_completed, resolved_canceled] }
+        reason: { type: string }
+        evidenceRefs: { type: array, items: { type: string } }
+        resolvedBy: { type: string, nullable: true }
+        resolvedAt: { type: string, format: date-time, nullable: true }
+    Settlement:
+      type: object
+      description: PR-03
+      properties:
+        id: { type: string }
+        bookingId: { type: string }
+        tutorId: { type: string }
+        tuition: { $ref: '#/components/schemas/Money' }
+        fee: { $ref: '#/components/schemas/Money' }
+        payable: { $ref: '#/components/schemas/Money' }
+        status: { type: string, enum: [PENDING, HELD, RELEASED, PAID, FAILED], description: "HELD = 분쟁 접수로 지급 보류(payments/contracts-proposal.md §2)" }
+    LearningOutcome:
+      type: object
+      description: "접근 권한: 본인 학습자·해당 세션 교육자·필요 업무 권한 운영자만 (authorization.md §2)"
+      properties:
+        id: { type: string }
+        sessionId: { type: string }
+        learnerId: { type: string }
+        goalAchieved: { type: string, enum: [yes, partial, no, no_response] }
+        feedbackText: { type: string, nullable: true }
+        submittedAt: { type: string, format: date-time }
+    WaitlistEntry:
+      type: object
+      properties:
+        id: { type: string }
+        learningRequestId: { type: string }
+        learnerId: { type: string }
+        alternativeTimeAccepted: { type: boolean }
+        notifyConsent: { type: boolean, default: true, description: "알림 동의 여부 — S04-T01" }
+        status: { type: string, enum: [open, notified, matched, expired, withdrawn] }
+    RebookingRequest:
+      type: object
+      properties:
+        id: { type: string }
+        originBookingId: { type: string }
+        learnerId: { type: string }
+        tutorId: { type: string }
+        newConversationId: { type: string, nullable: true }
+        status: { type: string, enum: [requested, converted, declined, expired] }
+paths:
+  /courses:
+    get:
+      summary: 주제·지역·시간 필터로 공개 수업 탐색
+      security: []
+      parameters:
+        - name: subject
+          in: query
+          schema: { type: string }
+        - name: lifeZoneId
+          in: query
+          schema: { type: string }
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: 공개 필드만 반환, 커서 페이지네이션
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Course' }
+                  nextCursor: { type: string, nullable: true }
+  /courses/{id}:
+    get:
+      summary: 수업 상세(CR-01)
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Course' }
+        "404": { description: 비공개/삭제된 수업 }
+  /tutors/{id}:
+    get:
+      summary: 교육자 공개 프로필 조회(S04-T01)
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TutorPublicProfile' }
+        "404": { description: 존재하지 않는 교육자 }
+  /tutors/{id}/availability:
+    get:
+      summary: 특정 교육자 가용 시간 목록 조회(S04-T01)
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    dayOfWeek: { type: integer, minimum: 0, maximum: 6 }
+                    startMinute: { type: integer, minimum: 0, maximum: 1440 }
+                    endMinute: { type: integer, minimum: 0, maximum: 1440 }
+  /tutor/profile:
+    post:
+      summary: 교육자 자기기재 프로필 등록/수정(CR-02)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                selfReportedSchool: { type: string }
+                selfReportedMajor: { type: string }
+                selfReportedCareer: { type: array, items: { type: object } }
+      responses:
+        "200": { description: "저장됨. 이 값만으로 공개 프로필의 verified 배지가 생성되지 않음(authorization.md §5)" }
+  /verifications:
+    post:
+      summary: 신원·재학·경력·자격 확인 신청
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type: { type: string, enum: [school_enrollment, major, career, certification] }
+                evidenceKey: { type: string }
+      responses:
+        "201":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Verification' }
+    get:
+      summary: 본인 확인 신청 목록 조회
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Verification' }
+  /admin/verifications:
+    get:
+      summary: 확인 신청 심사 대기열(ops.verification_review)
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending] }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Verification' }
+  /admin/verifications/{id}/decision:
+    post:
+      summary: 확인 신청 승인/반려(ops.verification_review)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision: { type: string, enum: [verified, rejected] }
+                rejectionReason: { type: string, description: "decision=rejected일 때 필수" }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Verification' }
+        "400": { description: "반려 사유 누락" }
+  /admin/learning-requests:
+    get:
+      summary: 학습 요청 매칭 대기열(ops.matching)
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/LearningRequest' }
+  /admin/waitlist-entries:
+    get:
+      summary: 대기 신청 목록(ops.matching)
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/WaitlistEntry' }
+  /tutors/{id}/activity-summary:
+    get:
+      summary: 교육 활동 집계 조회(비공개 상세는 본인·운영자만, 공개는 portfolio_consents 동의 시)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: "요청자가 본인/운영자면 상세, 그 외는 동의된 공개 필드만" }
+        "403": { $ref: '#/components/responses/Forbidden' }
+  /tutors/{id}/settlements:
+    get:
+      summary: 본인 정산 내역 조회
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Settlement' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+  /admin/bookings:
+    get:
+      summary: 상태별 예약 대기열 조회(CR-07, 한쪽 미납/완료 미응답/결제 불명 등)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [payment_pending_overdue, completion_no_response, payment_unknown, disputed]
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Booking' }
+  /admin/settlements:
+    get:
+      summary: 정산 목록·대사(ops.finance)
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Settlement' }
+  /admin/payout-attempts:
+    get:
+      summary: 지급 시도 목록·실패 재처리 대상(ops.finance)
+      responses:
+        "200": { description: "지급 성공/실패/재처리 상태 목록" }
+  /tutor/courses:
+    get:
+      summary: 교육자 본인 수업 목록 조회(S04-T01)
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Course' }
+    post:
+      summary: 커리큘럼 등록(교육자 본인)
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Course' }
+      responses:
+        "201":
+          description: 등록됨(공개 전 pending_review 상태)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Course' }
+        "400": { $ref: '#/components/responses/ValidationError' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+  /tutor/courses/curriculum/draft:
+    post:
+      summary: >
+        AI 커리큘럼 초안 생성(교육자 본인, 에드혹 추가 — docs/handoffs/ADHOC-01-ai-curriculum-draft.md).
+        현재는 규칙 기반 임시 생성기로 동작하며(실제 LLM 연동 전), 아무것도 저장하지 않는다.
+        반환된 초안은 그대로 또는 수정 후 POST /tutor/courses로 제출해야 실제 커리큘럼이 된다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [topic]
+              properties:
+                topic: { type: string, description: "튜터가 가르치고 싶은 분야/키워드" }
+                subjectId: { type: string, description: "선택 — 주어지면 존재 여부만 검증" }
+                level: { type: string, enum: [introductory, intermediate, advanced, exam_prep] }
+                sessionCount: { type: integer, minimum: 2, maximum: 8, default: 4 }
+      responses:
+        "200":
+          description: 생성된 초안(미저장)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  learningGoal: { type: string }
+                  unitBreakdown:
+                    type: array
+                    items: { type: object }
+                  expectedOutcome: { type: string }
+                  totalMinutes: { type: integer }
+                  curriculumSource: { type: string, enum: [ai_generated] }
+                  generatorVersion: { type: string, description: "규칙 기반 생성기 버전 — 실제 LLM 연동 전 임시" }
+                  topic: { type: string }
+        "400": { $ref: '#/components/responses/ValidationError' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+  /tutor/courses/{id}:
+    patch:
+      summary: 교육자 수업 수정 및 상태 전이(S04-T01)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                learningGoal: { type: string }
+                askingPrice: { $ref: '#/components/schemas/Money' }
+                expectedOutcome: { type: string }
+                sampleDescription: { type: string }
+                status: { type: string, enum: [draft, pending_review, published, unpublished] }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Course' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "404": { description: 수업 없음 }
+  /tutor/courses/{courseId}/versions:
+    post:
+      summary: 커리큘럼 복제·새 버전 생성(소유자만)
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clonedFromCourseId: { type: string, nullable: true, description: "본인 소유 course만 허용" }
+      responses:
+        "201": { description: 새 curriculum_versions 레코드 생성됨 }
+        "403":
+          description: 타인 커리큘럼 복제 시도
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /tutor/availability:
+    get:
+      summary: 본인 가능 시간 목록 조회(S04-T01)
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    dayOfWeek: { type: integer, minimum: 0, maximum: 6 }
+                    startMinute: { type: integer, minimum: 0, maximum: 1440 }
+                    endMinute: { type: integer, minimum: 0, maximum: 1440 }
+    put:
+      summary: 본인 가능 시간 설정(S04-T01)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                windows:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      dayOfWeek: { type: integer, minimum: 0, maximum: 6 }
+                      startMinute: { type: integer, minimum: 0, maximum: 1440 }
+                      endMinute: { type: integer, minimum: 0, maximum: 1440 }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: object }
+  /learning-requests:
+    post:
+      summary: 학습 요청 등록(학습자 본인)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LearningRequest' }
+      responses:
+        "201":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LearningRequest' }
+  /learning-requests/{id}/waitlist:
+    post:
+      summary: 조건에 맞는 교육자가 없을 때 대기 신청 등록
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "201":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WaitlistEntry' }
+  /admin/learning-requests/{id}/assist:
+    post:
+      summary: 운영자 수동 매칭 보조 처리(S04-T01)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                matchedTutorId: { type: string }
+                unmatchedReason: { type: string }
+                note: { type: string }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LearningRequest' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "404": { description: 학습 요청 없음 }
+  /subjects:
+    get:
+      summary: 지원 과목 목록 조회(S04-T01 참조 데이터)
+      security: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    code: { type: string }
+                    name: { type: string }
+                    category: { type: string }
+  /life-zones:
+    get:
+      summary: 생활권 목록 조회(S04-T01 참조 데이터)
+      security: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    code: { type: string }
+                    name: { type: string }
+                    campusId: { type: string }
+  /recommendations/query:
+    post:
+      summary: 목표·시간·지역 기반 추천(R0 규칙 기반, S02-T04에서 상세화)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                goal: { type: string }
+                desiredWindows:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      start: { type: string, format: date-time }
+                      end: { type: string, format: date-time }
+                lifeZoneId: { type: string }
+      responses:
+        "200":
+          description: 공개 가능·예약 조건 재검증된 후보. 실패 시 기본 추천으로 전환(빈 배열이 아니라 emptyReason 명시)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Course' }
+                  reasonCodes:
+                    type: object
+                    description: "AR-01 — courseId별 검증 가능한 추천 이유 코드"
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+                        enum: [REASON_TIME_MATCH, REASON_LEVEL_ENTRY, REASON_GOAL_KEYWORD, REASON_LIFE_ZONE_NEAR, REASON_NEW_TUTOR]
+                  emptyReason:
+                    type: string
+                    nullable: true
+                    enum: [NO_CANDIDATES, TIME_MISMATCH]
+                  requestId: { type: string }
+  /conversations:
+    post:
+      summary: 협의방 시작
+      responses:
+        "201": { description: 참여 가능·차단 상태 검사 통과 시 생성 }
+  /conversations/{id}/messages:
+    get:
+      summary: 메시지 조회
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: 현재 참여자만 조회 가능 }
+    post:
+      summary: 메시지 저장
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        "201": { description: "client_message_id 중복 시 기존 메시지 반환" }
+  /conversations/{id}/proposals:
+    post:
+      summary: 새 제안·재제안
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProposalTerms' }
+      responses:
+        "201":
+          description: 이전 ACTIVE 제안은 SUPERSEDED로 전이
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Proposal' }
+  /proposals/{id}/accept:
+    post:
+      summary: 특정 버전 동의. 필요한 동의가 모두 모이면 예약 생성
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        "200": { description: 동의 기록됨(예약 미생성, 상대방 대기) }
+        "201":
+          description: 예약 생성됨(PAYMENT_PENDING)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Booking' }
+        "409":
+          description: STALE_PROPOSAL — 이미 무효화된 제안
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /bookings/{id}:
+    get:
+      summary: 합의·결제·수업 상태 조회
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Booking' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+  /bookings/{id}/payment-attempts:
+    post:
+      summary: 본인 납부 의무 결제(모의/테스트/실결제는 서버 설정으로 분리)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        "201": { description: 결제 시도 생성 }
+        "409":
+          description: PAYMENT_AMOUNT_MISMATCH — 클라이언트 금액과 서버 계산 불일치
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /sessions/{id}/completion-confirmations:
+    post:
+      summary: 완료 확인·이의 제기
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "201": { description: 해당 회차 참여자만 가능 }
+  /sessions/{id}/learning-outcomes:
+    post:
+      summary: 학습 목표 달성 응답 제출(학습자 본인)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "201":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LearningOutcome' }
+    get:
+      summary: 학습 결과 조회
+      description: "접근 권한: 본인 학습자, 해당 세션 교육자, 필요 업무 권한 운영자만. 제3자 요청은 403."
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LearningOutcome' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+  /bookings/{id}/rebooking-requests:
+    post:
+      summary: 동일 교육자에게 재예약 요청(원본 예약 참조, 새 협의로 시작)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "201":
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RebookingRequest' }
+  /users/{id}/portfolio-consents:
+    put:
+      summary: 공개 포트폴리오(교육 활동 기록) 노출 동의 설정/철회
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: 철회 시 즉시 비공개 반영 }
+  /bookings/{id}/reviews:
+    post:
+      summary: 후기 작성(실제 완료된 참여자만)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "201": { description: 완료·참여 검증 후 생성 }
+        "403": { $ref: '#/components/responses/Forbidden' }
+  /reports:
+    post:
+      summary: 신고(신고자 본인, 증거 접근 제한)
+      responses:
+        "201": { description: 접수됨 }
+  /admin/disputes/{id}/resolve:
+    post:
+      summary: 분쟁 결정(ops.dispute_resolution 권한)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision, reason]
+              properties:
+                decision: { type: string, enum: [resolved_completed, resolved_canceled] }
+                reason: { type: string }
+      responses:
+        "200":
+          description: 사유·증거·감사 기록 필요. 관련 Settlement는 HELD에서 해제되거나 최종 취소 처리로 전환
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Dispute' }
+  /admin/settlements/{id}/release:
+    post:
+      summary: 정산 승인(ops.finance 권한)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: 분쟁·환불 재확인 후 실행 }
+  /webhooks/payments:
+    post:
+      summary: 외부 결제 상태 수신
+      security: []
+      responses:
+        "200": { description: 이벤트별 검증·중복 방지 후 큐 적재 }
+  /internal/jobs/run:
+    post:
+      summary: 짧은 배치 실행(스케줄러 전용 인증)
+      responses:
+        "200": { description: outbox_jobs 처리 }

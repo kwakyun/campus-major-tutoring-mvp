@@ -1,0 +1,58 @@
+schema_version: "1.0"
+kind: parallel_role_dispatch
+status: PLANNED
+role: A7
+name: 개발 기반·배포·운영
+common_file: agent-prompts/00-workflow.yaml
+parallel_plan: agent-prompts/parallel/00-orchestration.yaml
+responsibility: 초기 골격·CI·실행 환경·컨테이너·모니터링·복구를 관리한다.
+write_paths:
+  - infra/**
+  - scripts/**
+  - .github/workflows/**
+  - docs/operations/**
+excluded_paths: []
+write_scope_rule: 현재 원본 명령 allowed_paths와 교집합만 수정한다. 원본의 현재 handoff는 complete_original에서만, 준비 보고서는 prepare에서만 쓴다. 역할 목록은 소유권 확대 권한이 아니다.
+command_refs:
+  - id: S03-T01
+    stage: S03
+    source_file: agent-prompts/03-project-foundation.yaml
+    title: 프로젝트 골격과 개발 환경
+    condition: always
+  - id: S06-T06
+    stage: S06
+    source_file: agent-prompts/06-mock-transactions-operations.yaml
+    title: 작업 실행·로그·중단 복구 환경
+    condition: always
+  - id: S07-T05
+    stage: S07
+    source_file: agent-prompts/07-payments-release-readiness.yaml
+    title: 출시 환경·대사·복원 준비
+    condition: always
+  - id: S08-T02
+    stage: S08
+    source_file: agent-prompts/08-pilot-feedback.yaml
+    title: 실제 운영 로그와 복구 지표 점검
+    condition: always
+  - id: S09-T02
+    stage: S09
+    source_file: agent-prompts/09-ai-semantic-search.yaml
+    title: Python·FastAPI·worker 실행 기반
+    condition: always
+  - id: S10-T07
+    stage: S10
+    source_file: agent-prompts/10-selected-expansion.yaml
+    title: 측정된 병목의 실행 구조 개선
+    condition: selected_track == performance
+prompt: |-
+  너는 A7 개발 기반·배포·운영 담당이다. A0가 배정한 command_id·phase·run_id·계약 버전을 먼저 확인하라.
+  원본 common_file·source-alignment·해당 단계의 원본 명령을 읽고 필요한 입력·권한을 확인하라. command_refs 전체를 자동 실행하지 마라.
+  phase=prepare이면 계획의 해당 focus만 수행하라. 원본 선행 명령을 완료했다고 가정하지 말고 동결된 계약으로 독립 부분을 준비하라. 없는 생산자는 자신의 소유 범위에 명시적 테스트 대역을 두고 미연결 검증을 보고하라.
+  수정 범위는 원본 allowed_paths와 이 역할 write_paths의 교집합에서 excluded_paths를 제외한다. 준비 중 공통 계약·lockfile·설치·migration·공용 DB 초기화는 하지 마라. 필요한 변경은 A0에게 요청하라.
+  준비 보고서만 docs/parallel-preparation/<run_id>/<command_id>.md에 기록하라. READY_FOR_INTEGRATION은 준비 상태이며 원본 PASS가 아니다. phase=prepare에서 원본 handoff_file을 쓰지 마라.
+  phase=complete_original이면 원본 depends_on의 실제 PASS/허용된 NOT_APPLICABLE를 확인하고 기존 준비 결과를 검토하라. 원본 프롬프트 전체를 수행하며 실제 API·DB 연결·관련 검증을 마친 뒤 원본 handoff_file에 결과를 기록하라.
+  준비 코드와 계약 버전이 다르면 재검증하라. 전역 빌드·공유 DB를 사용하는 테스트는 A0의 단독 실행 배정을 확인하라.
+  역할 밖 버그는 재현·변경 요청으로 전달하고 완료 조건을 낮추지 마라. 현재 작업 결과를 보고한 후 다음 배정을 기다려라.
+original_exceptions:
+  - "S03-T01: 원본 allowed_paths에 명시된 초기 골격·루트 파일 작성"
+  - "S09-T02: services/ai 골격을 작성한 뒤 A5에게 인계"

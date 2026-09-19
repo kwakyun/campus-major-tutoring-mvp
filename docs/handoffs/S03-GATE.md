@@ -1,0 +1,26 @@
+# Handoff: S03-GATE
+
+- task_id: S03-GATE
+- agent: A0(총괄·통합)
+- status: PASS
+- summary: S03-T01(프로젝트 골격·개발환경)~T05(기반 통합 검증)의 결과를 통합 판정했다. exit_criteria 3개 항목(웹·API·DB 실행/빌드/검증 명령 문서화, 인증·환경분리·CI·스테이징 준비도 검증, 초기 고객군·신원확인 상태의 가상 데이터 구분 검증)을 모두 실제 실행 결과로 충족했다. S02-design-review.md의 F-02(자기거래 DB 제약 미설계)를 실제 DB 제약으로 구현·검증해 RESOLVED로 전환했다. 미완료 항목(브라우저 육안 확인, GitHub Actions 실제 실행, Supabase/결제 연동 등)은 숨기지 않고 명시적으로 다음 단계 또는 사용자 확인 사항으로 이관했다.
+- changed_files:
+  - docs/releases/S03-gate.md
+  - docs/tasks/index.md
+- evidence:
+  - base_revision: docs/handoffs/S03-T01.md~S03-T05.md(모두 status PASS, 2026-09-19)
+  - checks:
+    - "exit_criteria 1: docs/operations/development.md + docs/qa/S03-foundation.md §1·§2 확인"
+    - "exit_criteria 2: docs/backend/auth-foundation.md + .env.example + docs/qa/S03-foundation.md §3(시나리오 8·9) 확인"
+    - "exit_criteria 3: db/seeds/demo.sql + docs/qa/S03-foundation.md §3(시나리오 4) 확인"
+  - not_run:
+    - "docs/releases/S03-gate.md §3에 표로 정리(브라우저 육안 확인, GitHub Actions 실행, Supabase/결제 연동, Windows 로컬 재현 등)"
+  - policy_and_metric_versions: "packages/contracts/openapi.yaml 0.2.0-s02-baseline 변경 없음"
+- remaining_work:
+  - "S04 착수 시 FakeSessionVerifier와 DB users 레코드 연결"
+  - "S04 착수 시 waitlist_entries/learning_outcomes 접근 제어를 애플리케이션 계층에 구현"
+  - "F-04(completion_rate 분모 표준화)는 계속 S06 이전 담당에게 이관"
+- contract_requests: []
+- next_owner: 사용자 지시 대기 — 다음 실행 가능한 명령은 S04(agent-prompts/04-users-courses-discovery.yaml) 첫 명령이나 자동 시작하지 않음
+- source_requirement_evidence:
+  - "SRC-01, SRC-02, SRC-06, SRC-07, SRC-08: 각 S03-T01~T05 handoff의 source_requirement_evidence로 개별 확인, 이 문서에서 통합 확인"

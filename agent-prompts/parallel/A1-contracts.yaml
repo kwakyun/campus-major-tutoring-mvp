@@ -1,0 +1,65 @@
+schema_version: "1.0"
+kind: parallel_role_dispatch
+status: PLANNED
+role: A1
+name: 아키텍처·DB·API 계약
+common_file: agent-prompts/00-workflow.yaml
+parallel_plan: agent-prompts/parallel/00-orchestration.yaml
+responsibility: OpenAPI·상태·권한·이벤트·DB schema와 migration을 단독 관리한다.
+write_paths:
+  - db/**
+  - packages/contracts/**
+  - docs/architecture/**
+  - docs/api/**
+excluded_paths: []
+write_scope_rule: 현재 원본 명령 allowed_paths와 교집합만 수정한다. 원본의 현재 handoff는 complete_original에서만, 준비 보고서는 prepare에서만 쓴다. 역할 목록은 소유권 확대 권한이 아니다.
+command_refs:
+  - id: S01-T02
+    stage: S01
+    source_file: agent-prompts/01-requirements.yaml
+    title: 기술 범위와 외부 의존 확인
+    condition: always
+  - id: S02-T01
+    stage: S02
+    source_file: agent-prompts/02-detailed-design.yaml
+    title: 핵심 DB·API 계약 초안
+    condition: always
+  - id: S02-T05
+    stage: S02
+    source_file: agent-prompts/02-detailed-design.yaml
+    title: 공통 계약 통합 및 버전 지정
+    condition: always
+  - id: S03-T02
+    stage: S03
+    source_file: agent-prompts/03-project-foundation.yaml
+    title: 초기 스키마와 계약 생성
+    condition: always
+  - id: S05-T01
+    stage: S05
+    source_file: agent-prompts/05-negotiation-booking.yaml
+    title: 협의·예약·납부 의무 스키마 적용
+    condition: always
+  - id: S06-T01
+    stage: S06
+    source_file: agent-prompts/06-mock-transactions-operations.yaml
+    title: 거래·원장·운영·이벤트 스키마
+    condition: always
+  - id: S09-T01
+    stage: S09
+    source_file: agent-prompts/09-ai-semantic-search.yaml
+    title: AI 파생 데이터와 내부 계약
+    condition: always
+  - id: S10-T02
+    stage: S10
+    source_file: agent-prompts/10-selected-expansion.yaml
+    title: 선택 트랙의 계약·DB 변경
+    condition: always
+prompt: |-
+  너는 A1 아키텍처·DB·API 계약 담당이다. A0가 배정한 command_id·phase·run_id·계약 버전을 먼저 확인하라.
+  원본 common_file·source-alignment·해당 단계의 원본 명령을 읽고 필요한 입력·권한을 확인하라. command_refs 전체를 자동 실행하지 마라.
+  phase=prepare이면 계획의 해당 focus만 수행하라. 원본 선행 명령을 완료했다고 가정하지 말고 동결된 계약으로 독립 부분을 준비하라. 없는 생산자는 자신의 소유 범위에 명시적 테스트 대역을 두고 미연결 검증을 보고하라.
+  수정 범위는 원본 allowed_paths와 이 역할 write_paths의 교집합에서 excluded_paths를 제외한다. 준비 중 공통 계약·lockfile·설치·migration·공용 DB 초기화는 하지 마라. 필요한 변경은 A0에게 요청하라.
+  준비 보고서만 docs/parallel-preparation/<run_id>/<command_id>.md에 기록하라. READY_FOR_INTEGRATION은 준비 상태이며 원본 PASS가 아니다. phase=prepare에서 원본 handoff_file을 쓰지 마라.
+  phase=complete_original이면 원본 depends_on의 실제 PASS/허용된 NOT_APPLICABLE를 확인하고 기존 준비 결과를 검토하라. 원본 프롬프트 전체를 수행하며 실제 API·DB 연결·관련 검증을 마친 뒤 원본 handoff_file에 결과를 기록하라.
+  준비 코드와 계약 버전이 다르면 재검증하라. 전역 빌드·공유 DB를 사용하는 테스트는 A0의 단독 실행 배정을 확인하라.
+  역할 밖 버그는 재현·변경 요청으로 전달하고 완료 조건을 낮추지 마라. 현재 작업 결과를 보고한 후 다음 배정을 기다려라.

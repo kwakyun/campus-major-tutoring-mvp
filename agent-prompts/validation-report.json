@@ -1,0 +1,82 @@
+{
+  "status": "PASS",
+  "validated_at": "2026-09-18T15:54:32.572Z",
+  "content_revision": "2026-09-19.sources-v2",
+  "parser": "yaml",
+  "yaml_files": 11,
+  "stages": 10,
+  "roles": 8,
+  "commands": 65,
+  "implementation_commands": 55,
+  "stage_gates": 10,
+  "source_requirements": 12,
+  "commands_with_source_requirements": 45,
+  "duplicate_ids": 0,
+  "missing_dependencies": 0,
+  "dependency_cycles": 0,
+  "checked": [
+    "YAML syntax and duplicate keys",
+    "stage order and registry",
+    "role IDs",
+    "command order and acyclic dependencies",
+    "stage gate completeness",
+    "handoff uniqueness and expected output write scopes",
+    "source documents and SRC traceability",
+    "conditional dispatch for all six expansion tracks",
+    "S09 independence from payments/pilot",
+    "content hashes"
+  ],
+  "selected_track_matrix": {
+    "personalization": [
+      "S10-T03",
+      "S10-T06"
+    ],
+    "group": [
+      "S10-T04",
+      "S10-T05",
+      "S10-T06"
+    ],
+    "multi_session": [
+      "S10-T04",
+      "S10-T05",
+      "S10-T06"
+    ],
+    "performance": [
+      "S10-T07"
+    ],
+    "campus_area_expansion": [
+      "S10-T03",
+      "S10-T04",
+      "S10-T06"
+    ],
+    "referral_rewards": [
+      "S10-T04",
+      "S10-T05",
+      "S10-T06"
+    ]
+  },
+  "sha256": {
+    "전공한시간_MVP_사업계획서.md": "a7294f8476b1bba820fdb039731d134f361f7bc9fd3d85c15c32c790753d26ee",
+    "전공한시간_웹서비스_아키텍처.md": "39c536c49b1f0b37586dceb32266061360500bd9604cd0b16bee78c478d27c62",
+    "전공한시간_AI_추천_아키텍처.md": "1f771c45a3fcae3faeef8faf8cc2bd44035822823617802104d0216c34c2c341",
+    "전공한시간_단계별_소프트웨어_개발_로드맵.md": "c4022f485f0cebad3db36dfbdf03084e984ecc9e4403c3d8823a0614153dc5f1",
+    "전공한시간_AI_Agent_역할별_개발_분담.md": "e752e569b883797d174a1c2434f6054a59df42e6ff755fd59903b863b13a91cb",
+    "docs/AI_Start-up_Sprint_사업계획서_양식.hwpx": "c67017dc1185eb68b745f62ab3576a0a010483f29c36d2f9cb225096a692ec56",
+    "docs/창업 초안서.pdf": "0203b20b0584020abc8e2d855673605c6f34e7c2cdac6b7111576cc81a9580e7",
+    "agent-prompts/source-alignment.md": "03ffb2f57e2a154928e5492d0e094f52766f6a63719df3bd8d6c364219c70cae",
+    "agent-prompts/00-workflow.yaml": "6bed04ee0b5c3e8ffb24dc9172eaa4a37bed66ebf9d05120c832fb931ca0019e",
+    "agent-prompts/01-requirements.yaml": "0899b621706b9304d30a93680d2ec7f017521c8271047f0eff3343d921f0013a",
+    "agent-prompts/02-detailed-design.yaml": "b05fa4539b4da25e411dd4b83d112020371763ed77ce03e2df7226e080b6444a",
+    "agent-prompts/03-project-foundation.yaml": "a84119d6c3f1a4199a519bc9e99e08882db985931238156ee2a0c4d636438add",
+    "agent-prompts/04-users-courses-discovery.yaml": "3d71a2cfaea8554a4e7c5c52e9a6c74edc544c1cc315b414fe6d1566d3a0e610",
+    "agent-prompts/05-negotiation-booking.yaml": "e7c4b910d1bb9d305a6f727c4637b736c95eeba2fa5b40e7499af8d339a2ee0c",
+    "agent-prompts/06-mock-transactions-operations.yaml": "1b1a01aced3b5611a8b32def24adf2c6a4bd6db402933939d2606a246479b0c8",
+    "agent-prompts/07-payments-release-readiness.yaml": "b5b2399a16c7b858ef6c309087f2c8db3689cb51d463371d83ec614fdf3520c9",
+    "agent-prompts/08-pilot-feedback.yaml": "fa1d80aade6e471c660561cd768ff45d4be07ac0abec3779b56b1a49cb5afc21",
+    "agent-prompts/09-ai-semantic-search.yaml": "283a9e2616dc9681491481acc29665d2c655f8b5a7aaec8de4a23f512f30b15f",
+    "agent-prompts/10-selected-expansion.yaml": "cefc53c5726dde7af58fc1a04f64602898a9fe346b73311eebbe1d3fdc79a239",
+    "agent-prompts/README.md": "910b6f0c9a72a7ef58aab390d38309d5d7abf2eca0a48572517eb8248abb46c3",
+    "agent-prompts/validate-prompts.cjs": "654a373103f88cf4eea6dcf456fa8115d8cca5915abbcedf48b3a2e4ef40c95c"
+  },
+  "scope": "Prompt package validation only; development commands and external operations were not executed."
+}

@@ -1,0 +1,182 @@
+# 에이전트에게 전달할 계획된 명령 프롬프트입니다. 쉘 스크립트가 아닙니다.
+schema_version: "1.0"
+kind: agent_prompt_stage
+id: S04
+order: 4
+title: 회원·수업·탐색·기본 추천
+status: PLANNED
+common_file: agent-prompts/00-workflow.yaml
+goal: 교육자가 수업을 등록하고 학습자가 적합한 수업을 찾을 수 있게 한다.
+requires_stage_gates:
+  - S03-GATE
+entry_checks:
+  - S03 인증·DB·웹 기반이 통합 완료됨
+dispatch_prompt: A0는 공통 지침과 실제 선행 결과를 확인한 후 commands.order 순서대로 한 명령씩 전달하라. 각 담당자는 자기 명령만 수행한다. 마지막 S04-GATE의 판정으로 현재 단계를 마무리한다.
+commands:
+  - id: S04-T01
+    order: 1
+    agent: A2
+    title: 회원·교육자·수업·시간 API
+    status: PLANNED
+    depends_on:
+      - S03-GATE
+    condition: always
+    prompt: |-
+      너는 전공한시간의 A2 핵심 업무 백엔드 담당이다.
+      agent-prompts/00-workflow.yaml의 공통 지침과 현재 단계의 선행 결과를 읽고 이 명령만 수행하라.
+      프로필·교육자 심사·수업 등록/수정/비공개·가능 시간·학습 요청·수동 매칭 API를 구현하라.
+      학습자에게 대학 재학을 필수로 요구하지 말고 공개 응답에서 실명·연락처·증빙을 제외하라.
+      추천 모듈이 사용할 최신 공개 상태·시간·차단 관계의 후보 조회 계약을 구현하라.
+      학습 목표·단원·수준·기한·시간·예산, 교육자 샘플 설명·예상 결과물·항목별 확인 상태를 저장·조회하라. 커리큘럼은 소유자가 복제·수정할 수 있게 하고 예약 사본에 소급 적용하지 마라.
+      매칭 실패 사유와 운영자 매칭 보조를 기록하고 대체 시간 제안·대기 신청·철회 API를 구현하라. 대기 신청은 예약·좌석 점유·결제를 생성하지 않으며 알림 동의와 중복 신청을 처리하라.
+    allowed_paths:
+      - apps/api/src/modules/identity/**
+      - apps/api/src/modules/catalog/**
+      - apps/api/src/modules/matching/**
+      - docs/backend/**
+      - docs/handoffs/S04-T01.md
+    expected_outputs:
+      - apps/api/src/modules/catalog/
+      - docs/backend/course-discovery.md
+    acceptance_criteria:
+      - 교육자가 자기 수업만 수정할 수 있음
+      - 다른 계정이 공개 필드만 조회할 수 있음
+      - 구체적인 학습 요청과 품질 근거가 저장되고 대기·대체 시간이 예약 확정으로 처리되지 않음
+    handoff_file: docs/handoffs/S04-T01.md
+    source_requirements:
+      - SRC-01
+      - SRC-02
+      - SRC-03
+  - id: S04-T02
+    order: 2
+    agent: A5
+    title: 조건·태그 기반 기본 추천
+    status: PLANNED
+    depends_on:
+      - S04-T01
+    condition: always
+    prompt: |-
+      너는 전공한시간의 A5 AI·추천·데이터 담당이다.
+      agent-prompts/00-workflow.yaml의 공통 지침과 현재 단계의 선행 결과를 읽고 이 명령만 수행하라.
+      공통 계약과 후보 조회 API를 사용해 필수 조건 필터와 선호 조건 순위를 구현하라.
+      평가가 없는 신규 교육자를 평점 0점으로 처리하지 말고 검증 가능한 추천 이유를 반환하라.
+      추천 요청·노출·상세·상담 이벤트 수집 경로를 구현하라. Python이나 외부 AI 없이 동작하게 하라.
+      시간·지역·주제·수준의 필수 조건과 선호를 구분하고 학교 소속을 자동적인 동일 학교 제한으로 쓰지 마라. 명시한 조건 안에서 생활권을 평가하라.
+      후보가 없으면 이유 코드와 대체 시간/대기 신청 경로를 반환하고 필수 조건을 몰래 완화하지 마라. AI 없이 초반 소수 교육자·콜드스타트를 처리하라.
+    allowed_paths:
+      - apps/api/src/modules/recommendations/**
+      - docs/ai/**
+      - docs/handoffs/S04-T02.md
+    expected_outputs:
+      - apps/api/src/modules/recommendations/
+      - docs/ai/baseline-recommendation.md
+    acceptance_criteria:
+      - 조건 위반 후보를 추천하지 않음
+      - 신규 수업과 일치 후보 없음 상태를 처리함
+      - 미재학·다른 학교 후보를 잘못 배제하지 않고 필수 조건 위반 후보 대신 대안 경로를 제공함
+    handoff_file: docs/handoffs/S04-T02.md
+    source_requirements:
+      - SRC-01
+      - SRC-03
+      - SRC-08
+      - SRC-10
+  - id: S04-T03
+    order: 3
+    agent: A3
+    title: 회원·수업·탐색 화면 연결
+    status: PLANNED
+    depends_on:
+      - S04-T02
+    condition: always
+    prompt: |-
+      너는 전공한시간의 A3 UX·프론트엔드 담당이다.
+      agent-prompts/00-workflow.yaml의 공통 지침과 현재 단계의 선행 결과를 읽고 이 명령만 수행하라.
+      교육자 등록·수업 작성·가능 시간 입력과 학습자 목록·상세·필터·기본 추천·학습 요청 화면을 구현하라.
+      실제 API를 연결하고 이름 공개 범위·인증 종류·희망가를 명확하게 표시하라.
+      추천 반환과 실제 화면 노출을 구분해 이벤트를 전송하라.
+      학습 목적 입력·샘플 설명·예상 결과물·검증/자기기재 상태와 커리큘럼 복제를 연결하라. 검색 실패 시 대체 시간 확인·대기 신청·철회를 제공하고 검증되지 않은 경력·학습 효과를 단정하지 마라.
+    allowed_paths:
+      - apps/web/**
+      - packages/ui/**
+      - docs/ux/**
+      - docs/handoffs/S04-T03.md
+    expected_outputs:
+      - apps/web/
+      - docs/ux/discovery-check.md
+    acceptance_criteria:
+      - 모바일에서 수업 등록→탐색→상담 진입이 가능함
+      - 빈 결과·권한 오류를 처리함
+      - 교육 품질 근거와 확인 상태를 구분하며 빈 매칭에서도 다음 행동이 가능함
+    handoff_file: docs/handoffs/S04-T03.md
+    source_requirements:
+      - SRC-01
+      - SRC-02
+      - SRC-03
+  - id: S04-T04
+    order: 4
+    agent: A6
+    title: 탐색·권한·추천 통합 검증
+    status: PLANNED
+    depends_on:
+      - S04-T03
+    condition: always
+    prompt: |-
+      너는 전공한시간의 A6 QA·품질 검증 담당이다.
+      agent-prompts/00-workflow.yaml의 공통 지침과 현재 단계의 선행 결과를 읽고 이 명령만 수행하라.
+      별도 학습자·교육자·운영자 계정으로 등록·심사·공개·검색·요청을 검증하라.
+      다른 사용자 자원 수정, 비공개 수업 노출, 필수 시간·지역 위반, 후보 없음과 신규 수업 처리를 확인하라.
+      대기 신청 중복·철회·동의, 필수 시간 불일치 시 조건을 바꾸지 않는 대안, 학교와 생활권 혼동, 커리큘럼 복제 권한을 검증하라.
+    allowed_paths:
+      - tests/**
+      - docs/qa/**
+      - docs/handoffs/S04-T04.md
+    expected_outputs:
+      - docs/qa/S04-discovery.md
+      - tests/e2e/
+    acceptance_criteria:
+      - 역할·리소스 접근 검증이 통과함
+      - 추천·이벤트가 실제 UI와 연결됨
+      - 신규 탐색·대기·품질 표시 사례가 검증됨
+    handoff_file: docs/handoffs/S04-T04.md
+    source_requirements:
+      - SRC-01
+      - SRC-02
+      - SRC-03
+      - SRC-08
+  - id: S04-GATE
+    order: 5
+    agent: A0
+    title: 4단계 통합 검증과 완료 판정
+    status: PLANNED
+    depends_on:
+      - S04-T01
+      - S04-T02
+      - S04-T03
+      - S04-T04
+    condition: always
+    prompt: |-
+      너는 A0 총괄·통합 담당이다.
+      이 단계의 모든 명령 보고와 QA 결과를 확인하고 exit_criteria를 기준으로 통합 버전을 판정하라.
+      실패·미검증·외부 의존은 숨기지 말고 소유자에게 보완 작업을 배분하라. 필요한 보완이 완료되면 동일 기준으로 재검증하라.
+      완료되지 않은 필수 명령을 임의로 건너뛰지 마라.
+      통합 완료 여부와 근거·남은 사항·다음 실행 가능 명령을 기록하라. 다음 단계는 자동 실행하지 마라.
+      첨부 문서 반영 사항도 source_requirements 및 agent-prompts/source-alignment.md에 연결해 검증하라.
+    allowed_paths:
+      - docs/tasks/index.md
+      - docs/decisions/**
+      - docs/releases/**
+      - docs/handoffs/S04-GATE.md
+    expected_outputs:
+      - docs/releases/S04-gate.md
+      - docs/tasks/index.md
+    acceptance_criteria:
+      - 교육자 수업 등록부터 학습자 상담 진입까지 연결됨
+      - 공개 범위·수정 권한·기본 추천이 검증됨
+      - 커리큘럼·품질 근거·조건 매칭 및 빈 결과의 대체 시간·대기 흐름이 동작함
+    handoff_file: docs/handoffs/S04-GATE.md
+exit_criteria:
+  - 교육자 수업 등록부터 학습자 상담 진입까지 연결됨
+  - 공개 범위·수정 권한·기본 추천이 검증됨
+  - 커리큘럼·품질 근거·조건 매칭 및 빈 결과의 대체 시간·대기 흐름이 동작함
+content_revision: 2026-09-19.sources-v2
+source_alignment_file: agent-prompts/source-alignment.md
