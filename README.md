@@ -35,8 +35,8 @@ campus-major-tutoring-mvp/
 ## 2. 빠른 시작 가이드 (Quick Start)
 
 ### 1) 사전 준비물
-- Node.js: 20 이상 24 이하 권장
-- 패키지 매니저: `pnpm` (v9 이상)
+- Node.js: 20 이상 23 미만 (package.json engines 기준; 22 버전 권장)
+- 패키지 매니저: `pnpm` 10.28.0 (packageManager 기준)
 
 ### 2) 설치 및 환경변수 준비
 ```powershell
@@ -63,7 +63,6 @@ pnpm run dev:web
 | 접속 대상 | 접속 URL | 설명 |
 | :--- | :--- | :--- |
 | **로컬 웹 브라우저** | `http://localhost:3000` | 서비스 메인 홈 접속 |
-| **타 기기 (동일 Wi-Fi)** | `http://192.168.22.27:3000` | 모바일/타 PC 브라우저 접속 |
 | **API 헬스체크** | `http://localhost:4000/health` | 백엔드 정상 구동 여부 확인 (`status: ok`) |
 | **로그인 / 세션 전환** | `http://localhost:3000/login` | 역할별 데모 세션 키 입력 |
 
@@ -87,12 +86,25 @@ pnpm run dev:web
 
 ---
 
-## 5. 최종 시스템 검증 내역
+## 5. 검증 명령과 현재 범위
 
-CI 검증과 동일한 명령어로 전체 무결성을 검증합니다:
+아래 명령으로 타입·빌드·테스트를 확인합니다. 통과 여부는 실행 환경과 해당 커밋의 결과로 판단합니다:
 
 ```powershell
-pnpm run typecheck    # 전체 워크스페이스 TypeScript 정적 타입 검사 통과
-pnpm run build        # API 서버 및 웹 17개 라우트 정적/동적 프로덕션 빌드 완료
-pnpm run test         # 도메인 로직 및 e2e 통합 테스트 통과 (31 passed)
+pnpm run typecheck    # TypeScript 타입 검사
+pnpm run build        # 워크스페이스 빌드
+pnpm run test         # 워크스페이스 테스트
 ```
+
+현재 문서는 로컬 데모 모드를 기준으로 합니다. 데모 세션은 실제 사용자 인증이나 실결제 운영 실적을 뜻하지 않습니다.
+PostgreSQL 스키마·향후 연동 설계와 현재 실행되는 저장 방식을 구분해 확인해야 합니다.
+
+## 6. 핵심 구현과 작업 기록
+
+- [시간 도메인](packages/domain/time/): 시간대 겹침 판정
+- [백엔드 모듈](apps/api/src/modules/): 매칭·협의·예약·정산 도메인 구분
+- [상태 머신 설계](docs/architecture/state-machines.md), [데이터 모델](docs/architecture/data-model.md)
+- [QA 기록](docs/qa/): 과거 검증의 범위와 결과
+- [AI 작업 프롬프트](agent-prompts/): 저장소에 포함된 개발 보조 자료
+
+[AI 활용 기록](AI_NOTES.md) · [변경 기록](CHANGELOG.md) · [작업 방법](CONTRIBUTING.md)
